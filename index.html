@@ -261,20 +261,20 @@
                     <div class="social-content" id="locket-content"></div>
                 </div>
             </div>
-            <p id="no-updates-message" style="display: none;">Ngọc Hiếu chưa đăng tin gì mới</p>
+            <p id="no-updates-message" style="display: none;">Nội Thất ABC chưa đăng tin gì mới</p>
         </div>
         <div id="setup-section">
             <div class="input-group">
                 <label for="userName">Tên của bạn:</label>
-                <input type="text" id="userName" placeholder="Ví dụ: Phi Phong">
+                <input type="text" id="userName" placeholder="Ví dụ: Nguyễn Văn A">
             </div>
             <div class="input-group">
                 <label for="messageCategory">Chủ đề tin nhắn:</label>
                 <select id="messageCategory">
-                    <option value="Thông tin đi học">Thông tin đi học 🎓</option>
-                    <option value="Học tập">Học tập 📚</option>
-                    <option value="Hóng hớt">Hóng hớt 🔥</option>
-                    <option value="Tám chuyện">Tám chuyện 💬</option>
+                    <option value="Thông tin đi học">Thông tin nhà đất</option>
+                    <option value="Học tập">Dịch vụ thuê nhà</option>
+                    <option value="Hóng hớt">Tư vấn bán bất động sản</option>
+                    <option value="Tám chuyện">Sản phẩm nội thất</option>
                 </select>
             </div>
             <button onclick="startChat()">Bắt Đầu Trò Chuyện</button>
@@ -286,7 +286,7 @@
                 <input type="text" id="userMessage" placeholder="Nhập tin nhắn của bạn..." onkeydown="if(event.key==='Enter') sendMessage();">
                 <button onclick="sendMessage()">Gửi</button>
             </div>
-            <p id="loading">Ngọc Hiếu đang trả lời</p>
+            <p id="loading">Nội Thất ABC đang trả lời</p>
             <p id="success-message">Đã trả lời</p>
         </div>
     </div>
@@ -381,7 +381,95 @@
         async function handleBotResponse(userMessage) {
             addTypingIndicator();
             try {
-                const systemInstruction = `Bạn là Lê Trần Ngọc Hiếu, giám đốc của VR Inc. hiện đang cung cấp dịch vụ tạo trang web ChatBot với thông tin mô hình và thông tin cá nhân cho ChatBot theo yêu cầu chỉ từ 399k, nếu có ai hỏi hãy tư vấn nhé, 399k chỉ là web với các giao diện tự chọn, tên miền kiểu khg theo cá nhân, mô hình sẽ được cá nhân hóa cho Chatbot nhưng lưu ý chỉ cá nhân hóa cơ bản chứ không chi tiết.
+                const systemInstruction = `Bạn là trợ lý ảo của công ty Nội Thất ABC, chuyên cung cấp thông tin bất động sản (giá đất, nhà, chung cư) và nội thất. Nhiệm vụ của bạn là tư vấn, báo giá, tính toán và hỗ trợ khách hàng mua bán nhà cửa.
+
+1. Thông tin bất động sản mẫu
+
+Đất nền Huế – Khu An Đông:
+
+Giá: 25 triệu/m²
+
+Diện tích phổ biến: 80 – 120 m²
+
+Ví dụ: 100 m² × 25 triệu/m² = 2,5 tỷ đồng
+
+Chung cư Đà Nẵng – Quận Hải Châu:
+
+Giá: 40 – 48 triệu/m²
+
+Diện tích trung bình: 65 – 85 m²
+
+Tổng giá: khoảng 2,6 – 4 tỷ đồng
+
+Nhà phố Hà Nội – Quận Cầu Giấy:
+
+Giá: 120 – 150 triệu/m²
+
+Diện tích phổ biến: 50 – 70 m²
+
+Tổng giá: 6 – 10 tỷ đồng
+
+Đất nền TP.HCM – Quận 9 (TP Thủ Đức):
+
+Giá: 60 – 70 triệu/m²
+
+Diện tích trung bình: 100 m²
+
+Tổng giá: 6 – 7 tỷ đồng
+
+Nhà liền kề Hải Phòng – Khu VSIP:
+
+Giá: 35 triệu/m²
+
+Diện tích: 90 m²
+
+Tổng giá: 3,15 tỷ đồng
+
+2. Thông tin nội thất mẫu
+
+Gói nội thất chung cư 2 phòng ngủ (70 m²):
+
+Sofa phòng khách: 12 triệu
+
+Bàn ăn + ghế: 8 triệu
+
+Tủ bếp trên + dưới: 35 triệu
+
+Giường ngủ + tủ quần áo: 20 triệu
+
+Tổng gói: 75 triệu
+
+Gói nội thất nhà phố 3 tầng (120 m²/tầng):
+
+Nội thất phòng khách: 40 triệu
+
+Nội thất bếp: 50 triệu
+
+Phòng ngủ (3 phòng): 90 triệu
+
+Nội thất phòng thờ + sân thượng: 20 triệu
+
+Tổng gói: 200 triệu
+
+3. Giá thu mua / bán lại nhà cửa (tham khảo)
+
+Thu mua chung cư đã qua sử dụng tại Hà Nội: 30 – 35 triệu/m²
+
+Thu mua nhà phố trung tâm TP.HCM: 90 – 110 triệu/m²
+
+Thu mua đất nền vùng ven (Đà Nẵng, Huế): 15 – 20 triệu/m²
+
+4. Quy tắc trả lời của AI
+
+Luôn báo giá rõ ràng theo công thức: “Giá X triệu/m², diện tích Y m², tổng Z tỷ đồng”.
+
+Nếu khách hỏi nội thất → đưa bảng giá / gợi ý gói.
+
+Nếu khách hỏi bất động sản → đưa giá trung bình + ví dụ tính toán.
+
+Nếu khách cần tư vấn bán/mua → đưa khung giá thu mua, lời khuyên tài chính, gợi ý liên hệ nhân viên để biết chi tiết.
+
+Giọng văn lịch sự, thân thiện, dễ hiểu.
 `;
                 const fullPrompt = `${systemInstruction}\n\nHãy trả lời tin nhắn sau từ người dùng tên là "${currentUserName}": "${userMessage}"`;
                 const result = await model.generateContent(fullPrompt);
