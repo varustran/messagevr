@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gửi Tin Nhắn Cho Ngọc Hiếu (với AI)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;900&display=swap');
+        :root {
+            --primary-color: #4a90e2; /* Xanh dương */
+            --secondary-color: #f5a623; /* Cam */
+            --accent-color-1: #e91e63; /* Hồng */
+            --accent-color-2: #00bcd4; /* Xanh ngọc */
+            --background-color: #eef2f5; /* Nền sáng */
+            --text-color: #333;
+            --white-color: #fff;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); /* Shadow nổi bật hơn */
+            --button-gradient: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            --button-hover-gradient: linear-gradient(45deg, var(--secondary-color), var(--accent-color-1));
+        }
+
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: var(--background-color);
+            margin: 0; padding: 20px;
+            display: flex; justify-content: center;
+            align-items: center; min-height: 100vh;
+            color: var(--text-color);
+            overflow: hidden;
+            position: relative; /* Cho footer */
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="rgb(74,144,226)" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>') 12 12, auto; /* Con trỏ mặc định */
+        }
+
+        /* --- Canvas cho Matrix Rain --- */
+        #matrix-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -2; /* Đặt sau cả canvas pháo hoa */
+        }
+
+        /* --- Canvas cho Pháo hoa --- */
+        #fireworks-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1; /* Nằm trên matrix rain */
+            pointer-events: none; /* Không chặn click chuột */
+        }
+
+        .container {
+            max-width: 500px; width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px); /* Blur mạnh hơn một chút */
+            padding: 30px; border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            position: relative;
+            z-index: 1;
+            transition: all 0.5s ease-in-out; /* Hiệu ứng chuyển động mượt mà */
+            border: 2px solid var(--primary-color); /* Viền màu mè hơn */
+        }
+        
+        h1 {
+            color: var(--primary-color); text-align: center; margin-bottom: 15px;
+            font-size: 2.5em; /* Lớn hơn */
+            font-weight: 900; /* Đậm hơn */
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1); /* Thêm đổ bóng chữ */
+        }
+        
+        #social-updates {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .social-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            text-align: center;
+        }
+        .social-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .social-item-title {
+            font-weight: 700; /* Đậm hơn */
+            margin-bottom: 8px;
+            font-size: 1em;
+            color: var(--primary-color); /* Màu chữ tiêu đề nổi bật */
+        }
+        .social-content {
+            width: 120px;
+            height: 180px;
+            border-radius: 15px; /* Bo góc nhiều hơn */
+            background-color: rgba(74, 144, 226, 0.1); /* Nền nhẹ nhàng hơn */
+            border: 1px dashed var(--accent-color-2); /* Viền nét đứt cá tính */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.85em;
+            color: #888;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow: hidden;
+            position: relative;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .social-content:hover {
+            transform: translateY(-5px) scale(1.05); /* Hiệu ứng nổi lên khi hover */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        .social-content img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 700; color: var(--text-color); } /* Đậm hơn */
+        input[type="text"], select {
+            width: 100%; padding: 14px; /* Tăng padding */
+            border: 2px solid #ddd; border-radius: 10px; /* Viền và bo góc đẹp hơn */
+            box-sizing: border-box; transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            font-size: 1em;
+        }
+        input[type="text"]:focus, select:focus {
+            border-color: var(--accent-color-1); outline: none;
+            box-shadow: 0 0 0 4px rgba(233, 30, 99, 0.2); /* Đổ bóng khi focus */
+        }
+        button {
+            width: 100%; padding: 18px; /* Tăng padding */
+            background: var(--button-gradient);
+            color: var(--white-color); border: none; border-radius: 10px; /* Bo góc đẹp hơn */
+            font-size: 1.1em; /* Lớn hơn */
+            font-weight: 700; cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+            letter-spacing: 0.5px; /* Tăng khoảng cách chữ */
+            text-transform: uppercase; /* Chữ in hoa */
+        }
+        button:hover {
+            transform: translateY(-3px) scale(1.02); /* Nổi và phóng to nhẹ */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+            background: var(--button-hover-gradient);
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="rgb(245,166,35)" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>') 12 12, pointer; /* Con trỏ đặc biệt khi hover nút */
+        }
+        #chat-section { display: none; margin-top: 30px; }
+        #chat-box {
+            height: 280px; /* Tăng chiều cao chat box */
+            border: 2px solid var(--primary-color); /* Viền màu */
+            border-radius: 12px; padding: 15px;
+            margin-bottom: 15px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 12px;
+            background-color: rgba(255, 255, 255, 0.8); /* Nền hơi trong suốt */
+        }
+        .message { padding: 12px 18px; border-radius: 20px; max-width: 85%; line-height: 1.4; white-space: pre-wrap; }
+        .user-message {
+            background-color: var(--primary-color); color: var(--white-color);
+            align-self: flex-end; border-bottom-right-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .bot-message {
+            background-color: #e9ebee; color: var(--text-color);
+            align-self: flex-start; border-bottom-left-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        }
+        .typing-indicator { font-style: italic; color: #888; align-self: flex-start; }
+        .chat-input-area { display: flex; gap: 10px; margin-top: 15px; } /* Khoảng cách trên */
+        .chat-input-area input { flex-grow: 1; border-radius: 10px; }
+        .chat-input-area button { width: auto; padding: 12px 25px; font-size: 1em; border-radius: 10px; }
+
+        #loading, #success-message {
+            text-align: center; margin-top: 15px; font-weight: 600; /* Đậm hơn */
+            display: none; font-size: 0.95em;
+        }
+        #loading { color: var(--secondary-color); }
+        #success-message { color: #28a745; }
+        #no-updates-message {
+            text-align: center;
+            color: #888;
+            margin-top: 20px;
+            font-style: italic;
+        }
+        
+        /* --- FOOTER MỚI --- */
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(51, 51, 51, 0.7); /* Màu chữ nhạt hơn */
+            font-size: 0.8em;
+            text-align: center;
+            width: 100%;
+            z-index: 0; /* Nằm dưới container */
+        }
+        .footer span {
+            color: var(--accent-color-1); /* Màu trái tim */
+            animation: pulse 1.5s infinite; /* Hiệu ứng đập của trái tim */
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* --- Hiệu ứng lấp lánh (Sparkle) --- */
+        .sparkle {
+            position: absolute;
+            background-color: var(--secondary-color);
+            border-radius: 50%;
+            opacity: 0;
+            animation: sparkle-fade 2s forwards;
+            pointer-events: none;
+            z-index: 2; /* Nằm trên container */
+        }
+        @keyframes sparkle-fade {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        /* --- PHẦN MỚI: GIAO DIỆN CHO MÁY TÍNH (DESKTOP) --- */
+        @media screen and (min-width: 768px) {
+            .container {
+                max-width: 800px; /* Làm cho khung chứa rộng hơn trên máy tính */
+                padding: 40px; /* Thêm một chút khoảng trống bên trong */
+            }
+
+            #chat-box {
+                height: 450px; /* Tăng đáng kể chiều cao của hộp chat trên máy tính */
+            }
+            
+            .social-grid {
+                gap: 20px; /* Tăng khoảng cách giữa các mục mạng xã hội */
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix-canvas"></canvas>
+    <canvas id="fireworks-canvas"></canvas>
+
+    <div class="container">
+        <h1>Mạng nhắn tin đến Ngọc Hiếu</h1>
+        
+        <div id="social-updates">
+            <div class="social-grid">
+                <div class="social-item">
+                    <div class="social-item-title">Ghi chú 📝</div>
+                    <div class="social-content" id="note-content"></div>
+                </div>
+                <div class="social-item">
+                    <div class="social-item-title">Tin 📸</div>
+                    <div class="social-content" id="story-content"></div>
+                </div>
+                <div class="social-item">
+                    <div class="social-item-title">Locket 🖼️</div>
+                    <div class="social-content" id="locket-content"></div>
+                </div>
+            </div>
+            <p id="no-updates-message" style="display: none;">Ngọc Hiếu chưa đăng tin gì mới</p>
+        </div>
+        <div id="setup-section">
+            <div class="input-group">
+                <label for="userName">Tên của bạn:</label>
+                <input type="text" id="userName" placeholder="Ví dụ: Phi Phong">
+            </div>
+            <div class="input-group">
+                <label for="messageCategory">Chủ đề tin nhắn:</label>
+                <select id="messageCategory">
+                    <option value="Thông tin đi học">Thông tin đi học 🎓</option>
+                    <option value="Học tập">Học tập 📚</option>
+                    <option value="Hóng hớt">Hóng hớt 🔥</option>
+                    <option value="Tám chuyện">Tám chuyện 💬</option>
+                </select>
+            </div>
+            <button onclick="startChat()">Bắt Đầu Trò Chuyện</button>
+        </div>
+        
+        <div id="chat-section">
+            <div id="chat-box"></div>
+            <div class="chat-input-area">
+                <input type="text" id="userMessage" placeholder="Nhập tin nhắn của bạn..." onkeydown="if(event.key==='Enter') sendMessage();">
+                <button onclick="sendMessage()">Gửi</button>
+            </div>
+            <p id="loading">Ngọc Hiếu đang trả lời</p>
+            <p id="success-message">Đã trả lời</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        © 2025 All rights reserved - Made with <span>❤️</span> in Hue
+    </footer>
+
+    <script type="module">
+        // --- PHẦN GEMINI (Không đổi) ---
+        import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+        const GEMINI_API_KEY = 'AIzaSyCUpWEsdyFVGmHcs2hlCPcELIJCy9QvVWQ'; // API Key của bạn
+        const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
+        
+        // --- CẤU HÌNH GOOGLE FORM (Không đổi) ---
+        const GOOGLE_FORM_ACTION_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSebgT1-Yws43khPRwEHGvNEbLlhEF4P7Tyg_3rj-nNyrH9Srw/formResponse';
+        const NAME_ENTRY_ID = 'entry.1002171265';
+        const CATEGORY_ENTRY_ID = 'entry.1137914858';
+        const MESSAGE_ENTRY_ID = 'entry.922968917';
+        
+        let currentUserName = '';
+        let currentMessageCategory = '';
+        const chatBox = document.getElementById('chat-box');
+        const userMessageInput = document.getElementById('userMessage');
+
+        window.startChat = startChat;
+        window.sendMessage = sendMessage;
+
+        function loadSocialUpdates() {
+            const socialData = {
+                note: "Dùng MXH chán quá mình tự tạo mxh luôn", 
+                story: "", 
+                locket: "" 
+            };
+            const noteEl = document.getElementById('note-content');
+            const storyEl = document.getElementById('story-content');
+            const locketEl = document.getElementById('locket-content');
+            const noUpdatesMessage = document.getElementById('no-updates-message');
+            let hasAnyUpdate = false;
+            if (socialData.note) {
+                noteEl.textContent = socialData.note;
+                hasAnyUpdate = true;
+            } else {
+                noteEl.textContent = 'Ngọc Hiếu chưa đăng ghi chú nào';
+            }
+            if (socialData.story) {
+                storyEl.innerHTML = `<img src="${socialData.story}" alt="Story Image">`;
+                hasAnyUpdate = true;
+            } else {
+                storyEl.textContent = 'Chưa có gì';
+            }
+            if (socialData.locket) {
+                locketEl.innerHTML = `<img src="${socialData.locket}" alt="Locket Image">`;
+                hasAnyUpdate = true;
+            } else {
+                locketEl.textContent = 'Chưa có gì';
+            }
+            if (!hasAnyUpdate) {
+                document.getElementById('social-updates').style.display = 'none';
+                noUpdatesMessage.style.display = 'block';
+            } else {
+                document.getElementById('social-updates').style.display = 'block';
+                noUpdatesMessage.style.display = 'none';
+            }
+        }
+        
+        function startChat() {
+            currentUserName = document.getElementById('userName').value.trim();
+            currentMessageCategory = document.getElementById('messageCategory').value;
+            if (currentUserName === '') {
+                alert('Bạn ơi, đừng quên nhập tên nhé!');
+                return;
+            }
+            document.getElementById('setup-section').style.display = 'none';
+            document.getElementById('social-updates').style.display = 'none';
+            document.getElementById('no-updates-message').style.display = 'none';
+            document.getElementById('chat-section').style.display = 'block';
+            addBotMessage(`Chào ${currentUserName}, nhắn cho mình có việc gì không?`);
+        }
+
+        function sendMessage() {
+            const messageText = userMessageInput.value.trim();
+            if (messageText === '') return;
+            addUserMessage(messageText);
+            handleBotResponse(messageText);
+            sendDataToForm(messageText);
+            userMessageInput.value = '';
+            userMessageInput.focus();
+        }
+        
+        async function handleBotResponse(userMessage) {
+            addTypingIndicator();
+            try {
+                const systemInstruction = `Bạn là Lê Trần Ngọc Hiếu, giám đốc của VR Inc. hiện đang cung cấp dịch vụ tạo trang web ChatBot với thông tin mô hình và thông tin cá nhân cho ChatBot theo yêu cầu chỉ từ 399k, nếu có ai hỏi hãy tư vấn nhé, 399k chỉ là web với các giao diện tự chọn, tên miền kiểu khg theo cá nhân, mô hình sẽ được cá nhân hóa cho Chatbot nhưng lưu ý chỉ cá nhân hóa cơ bản chứ không chi tiết.
+`;
+                const fullPrompt = `${systemInstruction}\n\nHãy trả lời tin nhắn sau từ người dùng tên là "${currentUserName}": "${userMessage}"`;
+                const result = await model.generateContent(fullPrompt);
+                const response = await result.response;
+                const text = response.text();
+                removeTypingIndicator();
+                addBotMessage(text);
+            } catch (error) {
+                console.error("Lỗi từ API Gemini:", error);
+                removeTypingIndicator();
+                addBotMessage("Ôi, hình như mình đang có chút vấn đề. 😵 Nhưng bạn yên tâm, tin nhắn của bạn đã được gửi tới Ngọc Hiếu rồi nhé!");
+            }
+        }
+
+        async function sendDataToForm(message) {
+            const loadingIndicator = document.getElementById('loading');
+            const successIndicator = document.getElementById('success-message');
+            loadingIndicator.style.display = 'block';
+            successIndicator.style.display = 'none';
+            const formData = new FormData();
+            formData.append(NAME_ENTRY_ID, currentUserName);
+            formData.append(CATEGORY_ENTRY_ID, currentMessageCategory);
+            formData.append(MESSAGE_ENTRY_ID, `[Tin nhắn gốc] ${message}`);
+            try {
+                await fetch(GOOGLE_FORM_ACTION_URL, {
+                    method: 'POST', body: formData, mode: 'no-cors'
+                });
+                loadingIndicator.style.display = 'none';
+                successIndicator.style.display = 'block';
+                setTimeout(() => { successIndicator.style.display = 'none'; }, 2000);
+            } catch (error) {
+                console.error('Lỗi gửi form:', error);
+                loadingIndicator.style.display = 'none';
+                alert('Gửi tin nhắn tới Google Sheet thất bại.');
+            }
+        }
+        
+        function addMessageToBox(content, type) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', type);
+            messageElement.textContent = content;
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            return messageElement;
+        }
+
+        function addUserMessage(message) { addMessageToBox(message, 'user-message'); }
+        function addBotMessage(message) { addMessageToBox(message, 'bot-message'); }
+
+        function addTypingIndicator() {
+            const indicator = addMessageToBox("Đang trả lời...", "bot-message");
+            indicator.classList.add("typing-indicator");
+            indicator.id = "typing-indicator";
+        }
+
+        function removeTypingIndicator() {
+            const indicator = document.getElementById("typing-indicator");
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+        // --- SCRIPT MỚI CHO HIỆU ỨNG MƯA CHỮ ---
+        function setupMatrixRain() {
+            const canvas = document.getElementById('matrix-canvas');
+            const ctx = canvas.getContext('2d');
+
+            let width, height;
+            let drops = [];
+            const fontSize = 16;
+            let columns = 0;
+
+            // Bảng chữ cái, thêm 'M', 'P', 'H' nhiều lần để tăng tần suất
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789MPHMPHMPHMPHMPH";
+
+            function initialize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+                columns = Math.floor(width / fontSize);
+                drops = [];
+                for (let i = 0; i < columns; i++) {
+                    drops[i] = 1;
+                }
+            }
+
+            function draw() {
+                // Vẽ một lớp nền mờ để tạo hiệu ứng vệt mờ
+                ctx.fillStyle = 'rgba(238, 242, 245, 0.05)';
+                ctx.fillRect(0, 0, width, height);
+
+                // Màu của chữ cái, hợp với theme sáng của trang, hơi trong suốt
+                ctx.fillStyle = 'rgba(74, 144, 226, 0.5)';
+                ctx.font = `${fontSize}px monospace`;
+
+                for (let i = 0; i < drops.length; i++) {
+                    const text = chars[Math.floor(Math.random() * chars.length)];
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                    // Reset giọt mưa khi nó rơi xuống đáy, thêm chút ngẫu nhiên
+                    if (drops[i] * fontSize > height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+            }
+            
+            initialize();
+            window.addEventListener('resize', initialize);
+            setInterval(draw, 35);
+        }
+
+        // --- SCRIPT MỚI CHO HIỆU ỨNG PHÁO HOA ---
+        // Thư viện pháo hoa đơn giản (được nhúng trực tiếp)
+        class Firework {
+            constructor(x, y, targetX, targetY, hu, rand) {
+                this.x = x;
+                this.y = y;
+                this.baseX = x;
+                this.baseY = y;
+                this.targetX = targetX;
+                this.targetY = targetY;
+                this.hu = hu;
+                this.rand = rand;
+                this.alpha = 1;
+                this.trail = [];
+                this.speed = 2 + Math.random() * 2;
+                this.friction = 0.99;
+                this.gravity = 0.8;
+                this.angle = Math.atan2(targetY - y, targetX - x);
+                this.vx = Math.cos(this.angle) * this.speed;
+                this.vy = Math.sin(this.angle) * this.speed;
+                this.history = [];
+            }
+
+            update() {
+                this.history.push({ x: this.x, y: this.y });
+                if (this.history.length > 5) {
+                    this.history.shift();
+                }
+
+                this.vx *= this.friction;
+                this.vy *= this.friction;
+                this.vy += this.gravity * 0.1;
+                this.x += this.vx;
+                this.y += this.vy;
+
+                const dist = Math.sqrt(Math.pow(this.x - this.baseX, 2) + Math.pow(this.y - this.baseY, 2));
+                const targetDist = Math.sqrt(Math.pow(this.targetX - this.baseX, 2) + Math.pow(this.targetY - this.baseY, 2));
+
+                if (dist >= targetDist || this.y >= this.targetY + 50) {
+                    return true; // Đến đích hoặc rơi quá
+                }
+                return false;
+            }
+
+            draw(ctx) {
+                ctx.beginPath();
+                ctx.moveTo(this.history[this.history.length - 1].x, this.history[this.history.length - 1].y);
+                ctx.lineTo(this.x, this.y);
+                ctx.strokeStyle = `hsla(${this.hu}, 100%, 50%, ${this.alpha})`;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        }
+
+        class Particle {
+            constructor(x, y, hu) {
+                this.x = x;
+                this.y = y;
+                this.hu = hu;
+                this.alpha = 1;
+                this.friction = 0.95;
+                this.gravity = 0.8;
+                this.decay = Math.random() * 0.02 + 0.02;
+                this.speed = Math.random() * 8 + 2;
+                this.angle = Math.random() * Math.PI * 2;
+                this.vx = Math.cos(this.angle) * this.speed;
+                this.vy = Math.sin(this.angle) * this.speed;
+                this.history = [];
+            }
+
+            update() {
+                this.history.push({ x: this.x, y: this.y });
+                if (this.history.length > 5) {
+                    this.history.shift();
+                }
+
+                this.vx *= this.friction;
+                this.vy *= this.friction;
+                this.vy += this.gravity;
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= this.decay;
+
+                return this.alpha <= this.decay;
+            }
+
+            draw(ctx) {
+                ctx.beginPath();
+                ctx.moveTo(this.history[this.history.length - 1].x, this.history[this.history.length - 1].y);
+                ctx.lineTo(this.x, this.y);
+                ctx.strokeStyle = `hsla(${this.hu}, 100%, 50%, ${this.alpha})`;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+        }
+
+        function setupFireworks() {
+            const canvas = document.getElementById('fireworks-canvas');
+            const ctx = canvas.getContext('2d');
+            let fireworks = [];
+            let particles = [];
+            let hue = 0;
+
+            function initialize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+
+            function loop() {
+                ctx.fillStyle = 'rgba(238, 242, 245, 0.08)'; // Nền mờ để tạo hiệu ứng đuôi pháo hoa
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                if (Math.random() < 0.03 && fireworks.length < 5) { // Chỉ 1 vài pháo hoa cùng lúc
+                    const startX = canvas.width / 2;
+                    const startY = canvas.height;
+                    const targetX = Math.random() * canvas.width;
+                    const targetY = Math.random() * canvas.height / 3; // Bay lên cao hơn
+                    hue = Math.floor(Math.random() * 360);
+                    fireworks.push(new Firework(startX, startY, targetX, targetY, hue));
+                }
+
+                for (let i = fireworks.length - 1; i >= 0; i--) {
+                    if (fireworks[i].update()) {
+                        for (let j = 0; j < 50; j++) { // Mỗi pháo hoa nổ thành 50 hạt
+                            particles.push(new Particle(fireworks[i].x, fireworks[i].y, fireworks[i].hu));
+                        }
+                        fireworks.splice(i, 1);
+                    } else {
+                        fireworks[i].draw(ctx);
+                    }
+                }
+
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    if (particles[i].update()) {
+                        particles.splice(i, 1);
+                    } else {
+                        particles[i].draw(ctx);
+                    }
+                }
+
+                requestAnimationFrame(loop);
+            }
+
+            initialize();
+            window.addEventListener('resize', initialize);
+            loop();
+        }
+
+        // --- SCRIPT MỚI CHO HIỆU ỨNG LẤP LÁNH (Sparkle) ---
+        function createSparkle() {
+            const sparkle = document.createElement('div');
+            sparkle.classList.add('sparkle');
+            const size = Math.random() * 5 + 3; // Kích thước từ 3px đến 8px
+            sparkle.style.width = `${size}px`;
+            sparkle.style.height = `${size}px`;
+            sparkle.style.left = `${Math.random() * window.innerWidth}px`;
+            sparkle.style.top = `${Math.random() * window.innerHeight}px`;
+            sparkle.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 80%)`; // Màu ngẫu nhiên
+            document.body.appendChild(sparkle);
+
+            sparkle.addEventListener('animationend', () => {
+                sparkle.remove();
+            });
+        }
+
+        // Tạo hiệu ứng lấp lánh định kỳ
+        setInterval(createSparkle, 500); // Mỗi 0.5 giây tạo 1 hạt lấp lánh
+
+        // Chạy tất cả các hàm khởi tạo khi trang tải xong
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSocialUpdates();
+            setupMatrixRain();
+            setupFireworks(); // Khởi tạo pháo hoa
+        });
+
+    </script>
+</body>
+</html>
