@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>cOS Ultra | Flasher</title>
+    <title>cOS | Update Assistant</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         :root {
             --pixel-font: 'Press Start+2P', cursive;
             --primary-color: #FFFFFF;
             --secondary-color: #000000;
+            --glow-color: rgba(255, 255, 255, 0.2);
         }
         body {
             background: linear-gradient(-45deg, #000000, #1a1a1a, #000000, #2b2b2b);
@@ -18,24 +19,69 @@
             color: var(--primary-color);
             font-family: var(--pixel-font);
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
             overflow: hidden;
+            text-align: center;
         }
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         
+        .container {
+            width: 90%;
+            max-width: 800px;
+            padding: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.15);
+            background-color: rgba(20, 20, 20, 0.5);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            transition: all 0.5s ease;
+        }
         h1 {
-            font-size: 2.2rem;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 0 0 15px var(--glow-color);
+            margin-bottom: 10px;
             letter-spacing: -2px;
         }
+        p {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.7);
+        }
 
-        /* Tùy chỉnh giao diện cho công cụ nạp */
+        .device-selection {
+            margin: 40px 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .device-option {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 20px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .device-option:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .device-option.selected {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 25px var(--glow-color);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .device-option h2 {
+            font-size: 1.2rem;
+            margin: 0;
+        }
+        
+        /* Tùy chỉnh công cụ nạp */
         esp-web-install-button {
+            display: none; /* Ẩn ban đầu */
             --esp-web-install-button-color: var(--primary-color);
             --esp-web-install-button-background-color: transparent;
             --esp-web-install-button-border: 2px solid var(--primary-color);
@@ -43,25 +89,23 @@
             font-family: var(--pixel-font);
             box-shadow: 0 0 10px transparent;
             transition: all 0.3s ease;
-            margin-bottom: 20px;
+            margin-top: 30px;
         }
-        esp-web-install-button::part(button) {
-            padding: 15px 30px;
+        esp-web-install-button.visible {
+            display: block;
         }
+        esp-web-install-button::part(button) { padding: 15px 30px; }
         esp-web-install-button:not([install-unsupported]):hover {
             --esp-web-install-button-background-color: var(--primary-color);
             --esp-web-install-button-color: var(--secondary-color);
             box-shadow: 0 0 25px var(--primary-color);
         }
-        esp-web-install-button[install-unsupported] {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Tùy chỉnh cho cửa sổ dialog */
+        esp-web-install-button[install-unsupported] { opacity: 0.5; cursor: not-allowed; }
+        
+        /* Tùy chỉnh cửa sổ dialog */
         esp-web-install-dialog {
             --esp-web-install-dialog-font-family: var(--pixel-font);
-            --esp-web-install-dialog-background: rgba(20, 20, 20, 0.8);
+            --esp-web-install-dialog-background: rgba(20, 20, 20, 0.9);
             --esp-web-install-dialog-backdrop-background: rgba(0, 0, 0, 0.7);
             --esp-web-install-dialog-header-color: var(--primary-color);
             --esp-web-install-dialog-body-color: #ddd;
@@ -74,17 +118,51 @@
 </head>
 <body>
 
-    <h1>cOS Ultra Flasher</h1>
-    
-    <!-- Component esp-web-install-button phiên bản ổn định -->
-    <esp-web-install-button manifest="firmware/manifest.json">
-        <span slot="unsupported">Trình duyệt không hỗ trợ Web Serial</span>
-        <span slot="not-allowed">Cần HTTPS để hoạt động</span>
-    </esp-web-install-button>
+    <div class="container">
+        <h1>cOS Update</h1>
+        <p>Chọn thiết bị của bạn để bắt đầu cập nhật.</p>
+        
+        <div class="device-selection">
+            <div class="device-option" data-manifest="firmware/manifest_ultra.json">
+                <h2>cPod Ultra</h2>
+            </div>
+            <div class="device-option" data-manifest="firmware/manifest_mini.json">
+                <h2>cPod Mini</h2>
+            </div>
+        </div>
 
-    <!-- Script để tải component từ unpkg -->
-    <!-- Phiên bản 9.2.0 này được biết là rất ổn định -->
+        <esp-web-install-button>
+            <span slot="unsupported">Trình duyệt không hỗ trợ</span>
+            <span slot="not-allowed">Cần HTTPS</span>
+        </esp-web-install-button>
+    </div>
+
+    <!-- Script để tải component và xử lý logic -->
     <script type="module" src="https://unpkg.com/esp-web-tools@9.2.0/dist/web/install-button.js?module"></script>
-    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const installButton = document.querySelector('esp-web-install-button');
+            const deviceOptions = document.querySelectorAll('.device-option');
+
+            deviceOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    // Xóa lớp 'selected' khỏi tất cả các tùy chọn
+                    deviceOptions.forEach(opt => opt.classList.remove('selected'));
+                    
+                    // Thêm lớp 'selected' cho tùy chọn được nhấp
+                    option.classList.add('selected');
+
+                    // Lấy đường dẫn manifest từ thuộc tính data-manifest
+                    const manifestPath = option.getAttribute('data-manifest');
+                    
+                    // Cập nhật thuộc tính manifest của nút nạp
+                    installButton.manifest = manifestPath;
+                    
+                    // Hiển thị nút nạp với hiệu ứng
+                    installButton.classList.add('visible');
+                });
+            });
+        });
+    </script>
 </body>
 </html>
