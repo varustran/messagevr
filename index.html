@@ -112,9 +112,9 @@
         </div>
     </div>
 
-    <!-- Tích hợp thư viện ESPLoader -->
+    <!-- Tích hợp thư viện ESPLoader phiên bản mới và ổn định hơn -->
     <script type="module">
-        import { ESPLoader, Transport } from "https://unpkg.com/esptool-js@0.3.2/bundle.js";
+        import { ESPLoader, Transport } from "https://unpkg.com/esptool-js@0.4.3/bundle.js";
 
         const connectBtn = document.getElementById("connect-btn");
         const flashBtn = document.getElementById("flash-btn");
@@ -122,21 +122,34 @@
         const finalMessage = document.getElementById("final-message");
 
         let device, transport, esploader;
+        const BAUD_RATE = 460800; // Tốc độ cao hơn để ổn định hơn
 
+        // Hàm xử lý log từ thư viện để debug nếu cần
+        const term = {
+            write: (data) => console.log(data),
+            writeln: (data) => console.log(data)
+        };
+        
         connectBtn.addEventListener("click", async () => {
+            if (device) {
+                await device.close();
+                device = undefined;
+            }
+
             try {
-                if (device === undefined) {
-                    device = await navigator.serial.requestPort({});
-                    transport = new Transport(device);
-                }
+                // Yêu cầu cổng nối tiếp
+                const port = await navigator.serial.requestPort({});
+                transport = new Transport(port);
+                statusText.textContent = "Đang kết nối với cPod, vui lòng chờ...";
+                statusText.style.color = "var(--primary-color)";
 
-                statusText.textContent = "Đang kết nối với cPod...";
-                esploader = new ESPLoader(transport, 115200, undefined);
+                // Khởi tạo ESPLoader với tốc độ cao
+                esploader = new ESPLoader(transport, BAUD_RATE, term);
 
-                await esploader.main_fn();
-                await esploader.flash_id();
-
-                statusText.textContent = `Kết nối thành công! Chip: ${esploader.chip.name}. Sẵn sàng để nạp.`;
+                // Thực hiện kết nối chính
+                const chip = await esploader.main_fn();
+                
+                statusText.textContent = `Kết nối thành công! Chip: ${chip}. Sẵn sàng để nạp.`;
                 statusText.style.color = "var(--success-color)";
                 connectBtn.disabled = true;
                 flashBtn.disabled = false;
@@ -165,26 +178,29 @@
                 statusText.textContent = "Đang tải firmware...";
                 const firmwareResponse = await fetch(`firmware/${part.path}`);
                 const firmwareData = await firmwareResponse.arrayBuffer();
+                
+                // Chuẩn bị file để nạp
+                const fileArray = [{ data: new TextDecoder().decode(firmwareData), address: part.offset }];
 
-                // 3. Xóa bộ nhớ
+                // 3. Xóa bộ nhớ và nạp firmware mới
                 statusText.textContent = "Đang xóa bộ nhớ cũ... (vui lòng chờ)";
-                await esploader.erase_flash();
-
-                // 4. Nạp firmware mới
                 await esploader.write_flash(
-                    [{ data: firmwareData, address: part.offset }],
-                    'keep', // Giữ nguyên cấu hình WiFi
-                    'keep', // Giữ nguyên chế độ boot
-                    false,  // Không xác thực
-                    true,   // Nén dữ liệu
-                    (bytes_written, total_bytes) => {
+                    fileArray,
+                    '4mb',   // Kích thước flash, thường là 4mb cho ESP8266
+                    undefined, // progress callback cũ, không dùng nữa
+                    undefined, // ERASE_WRITE_FLAG, không dùng nữa
+                    true, // ERASE - Xóa trước khi nạp
+                    (bytes_written, total_bytes) => { // Progress callback mới
                         const percentage = Math.round((bytes_written / total_bytes) * 100);
                         statusText.textContent = `Đang nạp phần mềm... ${percentage}%`;
-                    }
+                    },
+                    true // SPIFFS_WRITE_FLAG - để an toàn
                 );
 
-                // 5. Hoàn thành
-                statusText.textContent = "Nạp thành công! Thiết bị sẽ khởi động lại.";
+                // 4. Hoàn thành
+                await esploader.hard_reset(); // Khởi động lại chip
+
+                statusText.textContent = "Nạp thành công! Thiết bị đã khởi động lại.";
                 statusText.style.color = "var(--success-color)";
                 finalMessage.textContent = "Xin chào cPoder!";
                 finalMessage.style.opacity = 1;
