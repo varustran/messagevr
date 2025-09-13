@@ -42,7 +42,6 @@
             -webkit-backdrop-filter: blur(15px);
         }
         h1 { font-size: 2.5rem; text-shadow: 0 0 15px var(--glow-color); margin-bottom: 10px; letter-spacing: -2px; }
-        h2 { font-size: 2rem; margin-bottom: 30px; text-shadow: 0 0 10px var(--glow-color); }
         p { font-size: 1rem; line-height: 1.6; color: rgba(255, 255, 255, 0.7); }
 
         .button-group {
@@ -70,9 +69,6 @@
             opacity: 0.3;
             cursor: not-allowed;
             border-color: rgba(255, 255, 255, 0.3);
-            background-color: transparent !important;
-            color: var(--primary-color) !important;
-            box-shadow: none !important;
         }
 
         .btn:not(:disabled):hover {
@@ -107,48 +103,46 @@
         </div>
 
         <div class="status-container">
-            <p id="status-text">Vui lòng kết nối với thiết bị cPod của bạn.</p>
+            <p id="status-text">Đưa cPod vào chế độ nạp rồi nhấn "Kết Nối".</p>
             <h2 id="final-message"></h2>
         </div>
     </div>
 
     <!-- Tích hợp thư viện ESPLoader phiên bản mới và ổn định hơn -->
     <script type="module">
-        import { ESPLoader, Transport } from "https://unpkg.com/esptool-js@0.4.3/bundle.js";
+        import { ESPLoader } from "https://unpkg.com/esptool-js@0.4.3/bundle.js";
 
         const connectBtn = document.getElementById("connect-btn");
         const flashBtn = document.getElementById("flash-btn");
         const statusText = document.getElementById("status-text");
         const finalMessage = document.getElementById("final-message");
 
-        let device, transport, esploader;
-        const BAUD_RATE = 460800; // Tốc độ cao hơn để ổn định hơn
+        const BAUD_RATE = 115200; // Giữ tốc độ chuẩn để tương thích tốt nhất
+        let esploader;
 
-        // Hàm xử lý log từ thư viện để debug nếu cần
-        const term = {
-            write: (data) => console.log(data),
-            writeln: (data) => console.log(data)
-        };
-        
         connectBtn.addEventListener("click", async () => {
-            if (device) {
-                await device.close();
-                device = undefined;
-            }
+            const term = {
+                write: (data) => console.log(data), // Để debug
+                writeln: (data) => console.log(data),
+            };
 
             try {
-                // Yêu cầu cổng nối tiếp
-                const port = await navigator.serial.requestPort({});
-                transport = new Transport(port);
-                statusText.textContent = "Đang kết nối với cPod, vui lòng chờ...";
+                statusText.textContent = "Đang chờ chọn cổng COM...";
                 statusText.style.color = "var(--primary-color)";
 
-                // Khởi tạo ESPLoader với tốc độ cao
-                esploader = new ESPLoader(transport, BAUD_RATE, term);
-
-                // Thực hiện kết nối chính
-                const chip = await esploader.main_fn();
+                const port = await navigator.serial.requestPort({});
+                const transport = new ESPLoader.Transport(port);
                 
+                esploader = new ESPLoader(
+                    transport,
+                    BAUD_RATE,
+                    term
+                );
+
+                statusText.textContent = "Đang kết nối với cPod...";
+                // Đây là bước quan trọng, tương tự như bộ reset tự động của Arduino IDE
+                const chip = await esploader.connect("default");
+
                 statusText.textContent = `Kết nối thành công! Chip: ${chip}. Sẵn sàng để nạp.`;
                 statusText.style.color = "var(--success-color)";
                 connectBtn.disabled = true;
@@ -158,47 +152,50 @@
             } catch (e) {
                 statusText.textContent = `Lỗi kết nối: ${e.message}`;
                 statusText.style.color = "var(--error-color)";
-                if (transport) await transport.disconnect();
-                device = undefined;
+                esploader = null;
             }
         });
 
         flashBtn.addEventListener("click", async () => {
+            if (!esploader) {
+                statusText.textContent = "Lỗi: Mất kết nối. Vui lòng kết nối lại.";
+                statusText.style.color = "var(--error-color)";
+                return;
+            }
+
             flashBtn.disabled = true;
             statusText.style.color = "var(--primary-color)";
 
             try {
-                // 1. Lấy thông tin file .bin từ manifest
-                const response = await fetch('firmware/manifest.json');
-                const manifest = await response.json();
-                const build = manifest.builds.find(b => b.chipFamily === "ESP8266");
-                const part = build.parts[0];
-
-                // 2. Lấy nội dung file .bin
-                statusText.textContent = "Đang tải firmware...";
-                const firmwareResponse = await fetch(`firmware/${part.path}`);
-                const firmwareData = await firmwareResponse.arrayBuffer();
+                // 1. Lấy thông tin và nội dung file .bin từ GitHub
+                statusText.textContent = "Đang tải firmware từ GitHub...";
+                const manifest_response = await fetch('./firmware/manifest.json');
+                const manifest = await manifest_response.json();
+                const part = manifest.builds[0].parts[0];
                 
-                // Chuẩn bị file để nạp
-                const fileArray = [{ data: new TextDecoder().decode(firmwareData), address: part.offset }];
+                const firmware_response = await fetch(`./firmware/${part.path}`);
+                const firmware_buffer = await firmware_response.arrayBuffer();
+                const firmware_data = new TextDecoder().decode(firmware_buffer);
 
-                // 3. Xóa bộ nhớ và nạp firmware mới
-                statusText.textContent = "Đang xóa bộ nhớ cũ... (vui lòng chờ)";
+                const fileArray = [{ data: firmware_data, address: part.offset }];
+
+                // 2. Nạp file, tích hợp sẵn việc XÓA TOÀN BỘ (eraseAll: true)
+                statusText.textContent = "Đang nạp phần mềm (sẽ xóa bộ nhớ cũ)...";
                 await esploader.write_flash(
                     fileArray,
-                    '4mb',   // Kích thước flash, thường là 4mb cho ESP8266
-                    undefined, // progress callback cũ, không dùng nữa
-                    undefined, // ERASE_WRITE_FLAG, không dùng nữa
-                    true, // ERASE - Xóa trước khi nạp
-                    (bytes_written, total_bytes) => { // Progress callback mới
+                    '4m', // flash size
+                    'dio', // flash mode
+                    '40m', // flash freq
+                    true,  // compressed
+                    true,  // erase all
+                    (bytes_written, total_bytes) => { // Progress callback
                         const percentage = Math.round((bytes_written / total_bytes) * 100);
-                        statusText.textContent = `Đang nạp phần mềm... ${percentage}%`;
-                    },
-                    true // SPIFFS_WRITE_FLAG - để an toàn
+                        statusText.textContent = `Đang nạp... ${percentage}%`;
+                    }
                 );
 
-                // 4. Hoàn thành
-                await esploader.hard_reset(); // Khởi động lại chip
+                // 3. Hoàn thành và khởi động lại
+                await esploader.hard_reset();
 
                 statusText.textContent = "Nạp thành công! Thiết bị đã khởi động lại.";
                 statusText.style.color = "var(--success-color)";
@@ -209,9 +206,11 @@
                 statusText.textContent = `Lỗi trong quá trình nạp: ${e.message}`;
                 statusText.style.color = "var(--error-color)";
             } finally {
-                // Ngắt kết nối và cho phép kết nối lại
-                if (transport) await transport.disconnect();
-                device = undefined;
+                // Đóng kết nối và reset trạng thái nút
+                if (esploader) {
+                    await esploader.transport.disconnect();
+                }
+                esploader = null;
                 connectBtn.disabled = false;
             }
         });
