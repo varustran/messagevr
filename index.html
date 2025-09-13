@@ -8,7 +8,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
         :root {
-            --pixel-font: 'Press Start 2P', cursive;
+            --pixel-font: 'Press Start+2P', cursive;
             --primary-color: #FFFFFF;
             --secondary-color: #000000;
             --accent-color: #00FF00;
@@ -247,66 +247,10 @@
 </head>
 <body>
 
-    <div class="screen" id="main-screen">
-        <div class="container">
-            <h1>cOS Ultra</h1>
-            <p>Trợ lý cập nhật phần mềm</p>
-            
-            <div class="version-selection">
-                <select id="os-version">
-                    <option value="">Chọn phiên bản để cài đặt</option>
-                    <option value="cOS Ultra 1.0">cOS Ultra 1.0</option>
-                </select>
-            </div>
-
-            <button class="btn" id="start-btn" disabled>Bắt đầu</button>
-        </div>
-    </div>
-    
-    <div class="screen is-hiding hidden" id="intro-screen">
-        <h2>cOS Ultra 1.0</h2>
-        <ul class="features-list" id="features-list">
-             <!-- Features will be injected by JS -->
-        </ul>
-        <button class="btn" id="continue-btn">Chuẩn bị nạp</button>
-    </div>
-
-    <div class="screen is-hiding hidden" id="update-screen">
-        <h2>Đang cài đặt cOS Ultra</h2>
-        <p>Quá trình sẽ mất vài phút. Vui lòng không ngắt kết nối.</p>
-        <div class="progress-bar-container">
-            <div class="progress-bar" id="progress-bar"></div>
-        </div>
-        <p class="status-text" id="status-text">Đang khởi tạo...</p>
-    </div>
-
-    <div class="screen is-hiding hidden" id="success-screen">
-        <svg id="success-svg" viewBox="0 0 130.2 130.2">
-            <circle class="path circle" fill="none" stroke="#FFF" stroke-width="6" stroke-miterlimit="10" cx="65.1" cy="65.1" r="62.1"/>
-            <polyline id="success-check-path" fill="none" stroke="#FFF" stroke-width="6" stroke-linecap="round" stroke-miterlimit="10" points="100,40 52,88 30,66"/>
-        </svg>
-        <h2 class="final-message" id="final-message"></h2>
-    </div>
-
-    <script>
-        const osVersionSelect = document.getElementById('os-version');
-        const startBtn = document.getElementById('start-btn');
-        
-        const mainScreen = document.getElementById('main-screen');
-        const introScreen = document.getElementById('intro-screen');
-        const updateScreen = document.getElementById('update-screen');
-        const successScreen = document.getElementById('success-screen');
-
-        const featuresList = document.getElementById('features-list');
-        const continueBtn = document.getElementById('continue-btn');
-        
-        const progressBar = document.getElementById('progress-bar');
-        const statusText = document.getElementById('status-text');
-
-        const finalMessage = document.getElementById('final-message');
-
-        // --- BẠN SẼ DÁN MÃ NẠP ESP8266 VÀO ĐÂY ---
-        const firmwareCode = `
+    <!-- =================================================================== -->
+    <!-- KHU VỰC DÀNH RIÊNG CHO MÃ NẠP ESP8266 (AN TOÀN TUYỆT ĐỐI)         -->
+    <!-- =================================================================== -->
+    <script type="text/plain" id="firmware-data">
 #include <ESP8266WiFi.h>
 #include <WiFiManager.h>
 #include <ESP8266WebServer.h>
@@ -1350,8 +1294,69 @@ void setup_ota() {
   ArduinoOTA.onError([](ota_error_t error) { Serial.printf("Error[%u]", error); });
   ArduinoOTA.begin();
 }
-        `;
-        // --- KẾT THÚC PHẦN DÁN MÃ ---
+    </script>
+    <!-- =================================================================== -->
+    <!-- KẾT THÚC KHU VỰC AN TOÀN                                           -->
+    <!-- =================================================================== -->
+
+
+    <div class="screen" id="main-screen">
+        <div class="container">
+            <h1>cOS Ultra</h1>
+            <p>Trợ lý cập nhật phần mềm</p>
+            
+            <div class="version-selection">
+                <select id="os-version">
+                    <option value="">Chọn phiên bản để cài đặt</option>
+                    <option value="cOS Ultra 1.0">cOS Ultra 1.0</option>
+                </select>
+            </div>
+
+            <button class="btn" id="start-btn" disabled>Bắt đầu</button>
+        </div>
+    </div>
+    
+    <div class="screen is-hiding hidden" id="intro-screen">
+        <h2>cOS Ultra 1.0</h2>
+        <ul class="features-list" id="features-list">
+             <!-- Features will be injected by JS -->
+        </ul>
+        <button class="btn" id="continue-btn">Chuẩn bị nạp</button>
+    </div>
+
+    <div class="screen is-hiding hidden" id="update-screen">
+        <h2>Đang cài đặt cOS Ultra</h2>
+        <p>Quá trình sẽ mất vài phút. Vui lòng không ngắt kết nối.</p>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <p class="status-text" id="status-text">Đang khởi tạo...</p>
+    </div>
+
+    <div class="screen is-hiding hidden" id="success-screen">
+        <svg id="success-svg" viewBox="0 0 130.2 130.2">
+            <circle class="path circle" fill="none" stroke="#FFF" stroke-width="6" stroke-miterlimit="10" cx="65.1" cy="65.1" r="62.1"/>
+            <polyline id="success-check-path" fill="none" stroke="#FFF" stroke-width="6" stroke-linecap="round" stroke-miterlimit="10" points="100,40 52,88 30,66"/>
+        </svg>
+        <h2 class="final-message" id="final-message"></h2>
+    </div>
+
+    <script>
+        const osVersionSelect = document.getElementById('os-version');
+        const startBtn = document.getElementById('start-btn');
+        
+        const mainScreen = document.getElementById('main-screen');
+        const introScreen = document.getElementById('intro-screen');
+        const updateScreen = document.getElementById('update-screen');
+        const successScreen = document.getElementById('success-screen');
+
+        const featuresList = document.getElementById('features-list');
+        const continueBtn = document.getElementById('continue-btn');
+        
+        const progressBar = document.getElementById('progress-bar');
+        const statusText = document.getElementById('status-text');
+
+        const finalMessage = document.getElementById('final-message');
 
         function switchScreen(fromScreen, toScreen) {
             fromScreen.classList.add('is-hiding');
@@ -1406,6 +1411,16 @@ void setup_ota() {
         }
 
         async function startUpdate() {
+            // Lấy mã nạp từ khu vực an toàn
+            const firmwareCode = document.getElementById('firmware-data').textContent;
+
+            if (firmwareCode.trim().length < 100) { // Kiểm tra xem người dùng đã dán code chưa
+                alert("Lỗi: Chưa có mã nạp (firmware) trong file HTML. Vui lòng dán code .ino của bạn vào khu vực được chỉ định.");
+                // Chuyển về màn hình chính
+                switchScreen(updateScreen, mainScreen);
+                return;
+            }
+
             if (!('serial' in navigator)) {
                 statusText.textContent = "Lỗi: Trình duyệt không hỗ trợ Web Serial API.";
                 alert("Trình duyệt của bạn không hỗ trợ Web Serial API. Vui lòng sử dụng Google Chrome hoặc Microsoft Edge phiên bản mới nhất.");
@@ -1419,7 +1434,6 @@ void setup_ota() {
                 statusText.textContent = "Đang thiết lập kết nối an toàn...";
                 await port.open({ baudRate: 115200 });
 
-                // Simulate update process with more descriptive steps
                 const updateSteps = [
                     { progress: 10, text: "Đã kết nối. Đang gửi yêu cầu nạp..." },
                     { progress: 25, text: "Đang truyền Kernel hệ thống..." },
@@ -1435,13 +1449,12 @@ void setup_ota() {
                     statusText.textContent = step.text;
                 }
                 
-                // Actual data writing (can be commented out for testing UI)
                 const writer = port.writable.getWriter();
                 const encoder = new TextEncoder();
                 await writer.write(encoder.encode(firmwareCode));
                 writer.releaseLock();
                 
-                await new Promise(resolve => setTimeout(resolve, 2500)); // Wait for reboot
+                await new Promise(resolve => setTimeout(resolve, 2500)); 
                 await port.close();
                 
                 progressBar.style.width = '100%';
@@ -1454,7 +1467,7 @@ void setup_ota() {
 
             } catch (err) {
                 statusText.textContent = `Lỗi: ${err.message}`;
-                progressBar.style.backgroundColor = '#FF453A'; // Red color for error
+                progressBar.style.backgroundColor = '#FF453A';
             }
         }
 
