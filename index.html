@@ -103,8 +103,9 @@
 
     </div>
 
+    <!-- Tích hợp thư viện ESPLoader, không thay đổi -->
     <script type="module">
-        import { ESPLoader } from "https://unpkg.com/esptool-js@0.4.3/bundle.js";
+        import { ESPLoader, Transport } from "https://unpkg.com/esptool-js@0.4.3/bundle.js";
 
         const connectBtn = document.getElementById("connect-btn");
         const flashBtn = document.getElementById("flash-btn");
@@ -112,6 +113,8 @@
 
         const BAUD_RATE = 115200;
         let esploader;
+        let transport;
+        let device = null;
 
         function addLog(level, message) {
             const now = new Date();
@@ -123,12 +126,15 @@
             log.scrollTop = log.scrollHeight;
         }
         
-        const term = { write: () => {}, writeln: () => {} }; // Bỏ qua log thô từ thư viện
+        const esploader_log = (msg) => addLog("info", msg);
+        const esploader_error = (msg) => addLog("error", msg);
 
         connectBtn.addEventListener("click", async () => {
-            if (esploader && esploader.connected()) {
-                await esploader.transport.disconnect();
+            if (device) {
+                await transport.disconnect();
+                device = null;
                 esploader = null;
+                transport = null;
                 connectBtn.textContent = "1. Kết Nối";
                 flashBtn.disabled = true;
                 addLog("info", "Đã ngắt kết nối.");
@@ -137,25 +143,35 @@
 
             try {
                 addLog("info", "Đang chờ chọn cổng COM...");
-                const port = await navigator.serial.requestPort({});
-                const transport = new ESPLoader.Transport(port);
-                esploader = new ESPLoader(transport, BAUD_RATE, term);
+                device = await navigator.serial.requestPort({});
+                transport = new Transport(device, true);
+                
+                esploader = new ESPLoader({
+                    transport,
+                    baudrate: BAUD_RATE,
+                    log: esploader_log,
+                    error: esploader_error,
+                });
                 
                 addLog("info", "Đang kết nối với cPod...");
-                const chip = await esploader.connect("default_reset");
+                // Đây là bước kết nối chính xác theo cú pháp mới
+                await esploader.main();
+                await esploader.flashId();
                 
-                addLog("success", `Kết nối thành công! Chip: ${chip}.`);
+                addLog("success", `Kết nối thành công! Chip: ${esploader.chipName}.`);
                 addLog("info", `MAC Address: ${esploader.macAddr()}`);
                 connectBtn.textContent = "Ngắt Kết Nối";
                 flashBtn.disabled = false;
             } catch (e) {
                 addLog("error", `Lỗi kết nối: ${e.message}`);
+                if (transport) await transport.disconnect();
+                device = null;
                 esploader = null;
             }
         });
         
         flashBtn.addEventListener("click", async () => {
-            if (!esploader || !esploader.connected()) {
+            if (!esploader) {
                 addLog("error", "Chưa kết nối. Vui lòng nhấn nút 'Kết Nối' trước.");
                 return;
             }
@@ -164,7 +180,6 @@
             connectBtn.disabled = true;
             
             try {
-                // 1. Lấy thông tin và nội dung file .bin từ GitHub
                 addLog("info", "Đang tải firmware từ GitHub...");
                 const manifest_response = await fetch('./firmware/manifest.json');
                 if (!manifest_response.ok) throw new Error(`Không tìm thấy file manifest.json (lỗi ${manifest_response.status})`);
@@ -174,25 +189,20 @@
                 const firmware_response = await fetch(`./firmware/${part.path}`);
                  if (!firmware_response.ok) throw new Error(`Không tìm thấy file ${part.path} (lỗi ${firmware_response.status})`);
                 const firmware_buffer = await firmware_response.arrayBuffer();
-                const firmware_data = new TextDecoder().decode(firmware_buffer);
-
-                addLog("success", `Tải xong firmware '${part.path}' (${firmware_data.length} bytes).`);
-
-                const fileArray = [{ data: firmware_data, address: part.offset }];
                 
-                // 2. Nạp file, tích hợp sẵn việc XÓA TOÀN BỘ
+                addLog("success", `Tải xong firmware '${part.path}' (${firmware_buffer.byteLength} bytes).`);
+
+                const fileArray = [{ data: firmware_buffer, address: part.offset }];
+                
                 addLog("info", "Bắt đầu quá trình nạp (sẽ xóa toàn bộ bộ nhớ)...");
-                const flashOptions = {
-                    fileArray: fileArray,
-                    flashSize: "4MB",
-                    flashMode: "dio",
-                    flashFreq: "40m",
-                    eraseAll: true, // Xóa toàn bộ trước khi nạp
-                    compress: true,
-                    // Progress callback
-                    reportProgress: (fileIndex, written, total) => {
-                        const percentage = Math.round((written / total) * 100);
-                        // Xóa dòng % cũ và ghi dòng mới để tránh spam log
+                await esploader.writeFlash(
+                    fileArray,
+                    '4MB', // flash size
+                    'dio', // flash mode
+                    '40MHz', // flash freq
+                    undefined, // SPIE
+                    (bytes_written, total_bytes) => { // Progress callback
+                        const percentage = Math.round((bytes_written / total_bytes) * 100);
                         const lastEntry = log.lastChild;
                         if (lastEntry && lastEntry.textContent.includes("Đang nạp")) {
                             lastEntry.textContent = `[${new Date().toLocaleTimeString()}] Đang nạp... ${percentage}%`;
@@ -200,21 +210,17 @@
                             addLog("info", `Đang nạp... ${percentage}%`);
                         }
                     },
-                };
-                await esploader.write_flash(flashOptions);
-
-                // 3. Hoàn thành và khởi động lại
+                    true // Erase All
+                );
+                
                 addLog("success", "Nạp thành công! Đang khởi động lại thiết bị...");
-                await esploader.hard_reset();
-                addLog("success", "Hoàn tất! Xin chào cPoder!");
+                await esploader.reset();
 
             } catch (e) {
                 addLog("error", `Lỗi trong quá trình nạp: ${e.message}`);
             } finally {
-                // Đóng kết nối và reset trạng thái nút
-                if (esploader) {
-                    await esploader.transport.disconnect();
-                }
+                if (transport) await transport.disconnect();
+                device = null;
                 esploader = null;
                 connectBtn.textContent = "1. Kết Nối";
                 connectBtn.disabled = false;
