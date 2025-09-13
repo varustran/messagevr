@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>cOS Ultra | Flashing Utility</title>
+    <title>cOS Ultra | Automated Flasher</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         :root {
             --pixel-font: 'Press Start+2P', cursive;
+            --monospace-font: 'Courier New', Courier, monospace;
             --primary-color: #FFFFFF;
             --secondary-color: #000000;
             --glow-color: rgba(255, 255, 255, 0.2);
             --success-color: #00FF00;
             --error-color: #FF453A;
+            --info-color: #00BFFF;
         }
         body {
             background: linear-gradient(-45deg, #000000, #1a1a1a, #000000, #2b2b2b);
@@ -32,8 +34,8 @@
         
         .container {
             width: 90%;
-            max-width: 800px;
-            padding: 50px;
+            max-width: 900px;
+            padding: 40px;
             border: 2px solid rgba(255, 255, 255, 0.2);
             border-radius: 20px;
             box-shadow: 0 0 40px rgba(255, 255, 255, 0.15);
@@ -41,177 +43,182 @@
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
         }
-        h1 { font-size: 2.5rem; text-shadow: 0 0 15px var(--glow-color); margin-bottom: 10px; letter-spacing: -2px; }
-        p { font-size: 1rem; line-height: 1.6; color: rgba(255, 255, 255, 0.7); }
-
+        h1 { font-size: 2.2rem; text-shadow: 0 0 15px var(--glow-color); margin-bottom: 30px; letter-spacing: -2px; }
+        
         .button-group {
-            margin-top: 40px;
             display: flex;
             justify-content: center;
+            align-items: center;
             gap: 20px;
+            margin-bottom: 20px;
         }
+        
+        .log-container {
+            background-color: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            height: 250px;
+            margin-bottom: 20px;
+            overflow-y: scroll;
+            text-align: left;
+            padding: 15px;
+        }
+        #log {
+            font-family: var(--monospace-font);
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .log-entry.error { color: var(--error-color); }
+        .log-entry.success { color: var(--success-color); }
 
         .btn {
             font-family: var(--pixel-font);
             background-color: transparent;
             color: var(--primary-color);
             border: 2px solid var(--primary-color);
-            padding: 15px 30px;
-            font-size: 1rem;
+            padding: 15px;
+            font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
             border-radius: 10px;
-            box-shadow: 0 0 10px transparent;
         }
-
-        .btn:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-
-        .btn:not(:disabled):hover {
-            background-color: var(--primary-color);
-            color: var(--secondary-color);
-            box-shadow: 0 0 25px var(--primary-color);
-        }
-
-        .status-container {
-            margin-top: 30px;
-            min-height: 50px;
-        }
-        
-        #final-message {
-             font-size: 2rem;
-             color: var(--success-color);
-             text-shadow: 0 0 15px var(--success-color);
-             opacity: 0;
-             transition: opacity 1s ease-in-out;
-        }
+        .btn:disabled { opacity: 0.3; cursor: not-allowed; border-color: rgba(255, 255, 255, 0.3); }
+        .btn:not(:disabled):hover { background-color: var(--primary-color); color: var(--secondary-color); box-shadow: 0 0 25px var(--primary-color); }
     </style>
 </head>
 <body>
-
     <div class="container">
-        <h1>cOS Ultra</h1>
-        <p>Tiện ích nạp phần mềm</p>
+        <h1>cOS Ultra Flasher</h1>
         
         <div class="button-group">
-            <button class="btn" id="connect-btn">Kết Nối</button>
-            <button class="btn" id="flash-btn" disabled>Xóa & Cài Đặt cOS</button>
+            <button class="btn" id="connect-btn">1. Kết Nối</button>
+            <button class="btn" id="flash-btn" disabled>2. Xóa & Cài Đặt cOS</button>
         </div>
 
-        <div class="status-container">
-            <p id="status-text">Đưa cPod vào chế độ nạp rồi nhấn "Kết Nối".</p>
-            <h2 id="final-message"></h2>
+        <div class="log-container">
+            <pre id="log"></pre>
         </div>
+
     </div>
 
-    <!-- Tích hợp thư viện ESPLoader phiên bản mới và ổn định hơn -->
     <script type="module">
         import { ESPLoader } from "https://unpkg.com/esptool-js@0.4.3/bundle.js";
 
         const connectBtn = document.getElementById("connect-btn");
         const flashBtn = document.getElementById("flash-btn");
-        const statusText = document.getElementById("status-text");
-        const finalMessage = document.getElementById("final-message");
+        const log = document.getElementById("log");
 
-        const BAUD_RATE = 115200; // Giữ tốc độ chuẩn để tương thích tốt nhất
+        const BAUD_RATE = 115200;
         let esploader;
 
+        function addLog(level, message) {
+            const now = new Date();
+            const time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${level}`;
+            logEntry.textContent = `[${time}] ${message}`;
+            log.appendChild(logEntry);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        const term = { write: () => {}, writeln: () => {} }; // Bỏ qua log thô từ thư viện
+
         connectBtn.addEventListener("click", async () => {
-            const term = {
-                write: (data) => console.log(data), // Để debug
-                writeln: (data) => console.log(data),
-            };
+            if (esploader && esploader.connected()) {
+                await esploader.transport.disconnect();
+                esploader = null;
+                connectBtn.textContent = "1. Kết Nối";
+                flashBtn.disabled = true;
+                addLog("info", "Đã ngắt kết nối.");
+                return;
+            }
 
             try {
-                statusText.textContent = "Đang chờ chọn cổng COM...";
-                statusText.style.color = "var(--primary-color)";
-
+                addLog("info", "Đang chờ chọn cổng COM...");
                 const port = await navigator.serial.requestPort({});
                 const transport = new ESPLoader.Transport(port);
+                esploader = new ESPLoader(transport, BAUD_RATE, term);
                 
-                esploader = new ESPLoader(
-                    transport,
-                    BAUD_RATE,
-                    term
-                );
-
-                statusText.textContent = "Đang kết nối với cPod...";
-                // Đây là bước quan trọng, tương tự như bộ reset tự động của Arduino IDE
-                const chip = await esploader.connect("default");
-
-                statusText.textContent = `Kết nối thành công! Chip: ${chip}. Sẵn sàng để nạp.`;
-                statusText.style.color = "var(--success-color)";
-                connectBtn.disabled = true;
+                addLog("info", "Đang kết nối với cPod...");
+                const chip = await esploader.connect("default_reset");
+                
+                addLog("success", `Kết nối thành công! Chip: ${chip}.`);
+                addLog("info", `MAC Address: ${esploader.macAddr()}`);
+                connectBtn.textContent = "Ngắt Kết Nối";
                 flashBtn.disabled = false;
-                finalMessage.style.opacity = 0;
-
             } catch (e) {
-                statusText.textContent = `Lỗi kết nối: ${e.message}`;
-                statusText.style.color = "var(--error-color)";
+                addLog("error", `Lỗi kết nối: ${e.message}`);
                 esploader = null;
             }
         });
-
+        
         flashBtn.addEventListener("click", async () => {
-            if (!esploader) {
-                statusText.textContent = "Lỗi: Mất kết nối. Vui lòng kết nối lại.";
-                statusText.style.color = "var(--error-color)";
+            if (!esploader || !esploader.connected()) {
+                addLog("error", "Chưa kết nối. Vui lòng nhấn nút 'Kết Nối' trước.");
                 return;
             }
 
             flashBtn.disabled = true;
-            statusText.style.color = "var(--primary-color)";
-
+            connectBtn.disabled = true;
+            
             try {
                 // 1. Lấy thông tin và nội dung file .bin từ GitHub
-                statusText.textContent = "Đang tải firmware từ GitHub...";
+                addLog("info", "Đang tải firmware từ GitHub...");
                 const manifest_response = await fetch('./firmware/manifest.json');
+                if (!manifest_response.ok) throw new Error(`Không tìm thấy file manifest.json (lỗi ${manifest_response.status})`);
                 const manifest = await manifest_response.json();
                 const part = manifest.builds[0].parts[0];
                 
                 const firmware_response = await fetch(`./firmware/${part.path}`);
+                 if (!firmware_response.ok) throw new Error(`Không tìm thấy file ${part.path} (lỗi ${firmware_response.status})`);
                 const firmware_buffer = await firmware_response.arrayBuffer();
                 const firmware_data = new TextDecoder().decode(firmware_buffer);
 
-                const fileArray = [{ data: firmware_data, address: part.offset }];
+                addLog("success", `Tải xong firmware '${part.path}' (${firmware_data.length} bytes).`);
 
-                // 2. Nạp file, tích hợp sẵn việc XÓA TOÀN BỘ (eraseAll: true)
-                statusText.textContent = "Đang nạp phần mềm (sẽ xóa bộ nhớ cũ)...";
-                await esploader.write_flash(
-                    fileArray,
-                    '4m', // flash size
-                    'dio', // flash mode
-                    '40m', // flash freq
-                    true,  // compressed
-                    true,  // erase all
-                    (bytes_written, total_bytes) => { // Progress callback
-                        const percentage = Math.round((bytes_written / total_bytes) * 100);
-                        statusText.textContent = `Đang nạp... ${percentage}%`;
-                    }
-                );
+                const fileArray = [{ data: firmware_data, address: part.offset }];
+                
+                // 2. Nạp file, tích hợp sẵn việc XÓA TOÀN BỘ
+                addLog("info", "Bắt đầu quá trình nạp (sẽ xóa toàn bộ bộ nhớ)...");
+                const flashOptions = {
+                    fileArray: fileArray,
+                    flashSize: "4MB",
+                    flashMode: "dio",
+                    flashFreq: "40m",
+                    eraseAll: true, // Xóa toàn bộ trước khi nạp
+                    compress: true,
+                    // Progress callback
+                    reportProgress: (fileIndex, written, total) => {
+                        const percentage = Math.round((written / total) * 100);
+                        // Xóa dòng % cũ và ghi dòng mới để tránh spam log
+                        const lastEntry = log.lastChild;
+                        if (lastEntry && lastEntry.textContent.includes("Đang nạp")) {
+                            lastEntry.textContent = `[${new Date().toLocaleTimeString()}] Đang nạp... ${percentage}%`;
+                        } else {
+                            addLog("info", `Đang nạp... ${percentage}%`);
+                        }
+                    },
+                };
+                await esploader.write_flash(flashOptions);
 
                 // 3. Hoàn thành và khởi động lại
+                addLog("success", "Nạp thành công! Đang khởi động lại thiết bị...");
                 await esploader.hard_reset();
-
-                statusText.textContent = "Nạp thành công! Thiết bị đã khởi động lại.";
-                statusText.style.color = "var(--success-color)";
-                finalMessage.textContent = "Xin chào cPoder!";
-                finalMessage.style.opacity = 1;
+                addLog("success", "Hoàn tất! Xin chào cPoder!");
 
             } catch (e) {
-                statusText.textContent = `Lỗi trong quá trình nạp: ${e.message}`;
-                statusText.style.color = "var(--error-color)";
+                addLog("error", `Lỗi trong quá trình nạp: ${e.message}`);
             } finally {
                 // Đóng kết nối và reset trạng thái nút
                 if (esploader) {
                     await esploader.transport.disconnect();
                 }
                 esploader = null;
+                connectBtn.textContent = "1. Kết Nối";
                 connectBtn.disabled = false;
+                flashBtn.disabled = true;
             }
         });
     </script>
