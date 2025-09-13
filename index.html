@@ -242,14 +242,9 @@
             transform: translateY(20px);
             animation: slideUpFadeIn 1s 1.5s ease-out forwards;
         }
-
     </style>
 </head>
 <body>
-
-    <!-- =================================================================== -->
-    <!-- KHU VỰC DÀNH RIÊNG CHO MÃ NẠP ESP8266 (AN TOÀN TUYỆT ĐỐI)         -->
-    <!-- =================================================================== -->
     <script type="text/plain" id="firmware-data">
 #include <ESP8266WiFi.h>
 #include <WiFiManager.h>
@@ -268,43 +263,41 @@
 #include <ArduinoOTA.h>
 #include "lwip/napt.h"
 #include "lwip/dns.h"
-
 // ===============================================================
 // --- FILE FONT.H ĐÃ ĐƯỢC TÍCH HỢP VÀO ĐÂY ---
 // ===============================================================
 const unsigned char TomThumb[] PROGMEM = {
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x5f, 0x00, 0x00, 0x00, 0x07, 0x00, 0x07, 0x00, 0x14, 0x7f, 0x14, 
-	0x7f, 0x14, 0x24, 0x2a, 0x7f, 0x2a, 0x12, 0x23, 0x13, 0x08, 0x64, 0x62, 0x36, 0x49, 0x55, 0x22, 
-	0x50, 0x00, 0x05, 0x03, 0x00, 0x00, 0x00, 0x1c, 0x22, 0x41, 0x00, 0x00, 0x41, 0x22, 0x1c, 0x00, 
-	0x14, 0x08, 0x3e, 0x08, 0x14, 0x08, 0x08, 0x3e, 0x08, 0x08, 0x00, 0x50, 0x30, 0x00, 0x00, 0x08, 
-	0x08, 0x08, 0x08, 0x08, 0x00, 0x60, 0x60, 0x00, 0x00, 0x20, 0x10, 0x08, 0x04, 0x02, 0x3e, 0x51, 
-	0x49, 0x45, 0x3e, 0x00, 0x42, 0x7f, 0x40, 0x00, 0x42, 0x61, 0x51, 0x49, 0x46, 0x21, 0x41, 0x45, 
-	0x4b, 0x31, 0x18, 0x14, 0x12, 0x7f, 0x10, 0x27, 0x45, 0x45, 0x45, 0x39, 0x3c, 0x4a, 0x49, 0x49, 
-	0x30, 0x01, 0x71, 0x09, 0x05, 0x03, 0x36, 0x49, 0x49, 0x49, 0x36, 0x06, 0x49, 0x49, 0x29, 0x1e, 
-	0x00, 0x36, 0x36, 0x00, 0x00, 0x00, 0x56, 0x36, 0x00, 0x00, 0x08, 0x14, 0x22, 0x41, 0x00, 0x14, 
-	0x14, 0x14, 0x14, 0x14, 0x00, 0x41, 0x22, 0x14, 0x08, 0x02, 0x01, 0x51, 0x09, 0x06, 0x32, 0x49, 
-	0x79, 0x41, 0x3e, 0x7e, 0x11, 0x11, 0x11, 0x7e, 0x7f, 0x49, 0x49, 0x49, 0x36, 0x3e, 0x41, 0x41, 
-	0x41, 0x22, 0x7f, 0x41, 0x41, 0x22, 0x1c, 0x7f, 0x49, 0x49, 0x49, 0x41, 0x7f, 0x09, 0x09, 0x09, 
-	0x01, 0x3e, 0x41, 0x49, 0x49, 0x7a, 0x7f, 0x08, 0x08, 0x08, 0x7f, 0x00, 0x41, 0x7f, 0x41, 0x00, 
-	0x20, 0x40, 0x41, 0x3f, 0x01, 0x7f, 0x08, 0x14, 0x22, 0x41, 0x7f, 0x40, 0x40, 0x40, 0x40, 0x7f, 
-	0x02, 0x0c, 0x02, 0x7f, 0x7f, 0x04, 0x08, 0x10, 0x7f, 0x3e, 0x41, 0x41, 0x41, 0x3e, 0x7f, 0x09, 
-	0x09, 0x09, 0x06, 0x3e, 0x41, 0x51, 0x21, 0x5e, 0x7f, 0x09, 0x19, 0x29, 0x46, 0x46, 0x49, 0x49, 
-	0x49, 0x31, 0x01, 0x01, 0x7f, 0x01, 0x01, 0x3f, 0x40, 0x40, 0x40, 0x3f, 0x1f, 0x20, 0x40, 0x20, 
-	0x1f, 0x3f, 0x40, 0x38, 0x40, 0x3f, 0x63, 0x14, 0x08, 0x14, 0x63, 0x07, 0x08, 0x70, 0x08, 0x07, 
-	0x61, 0x51, 0x49, 0x45, 0x43, 0x00, 0x7f, 0x41, 0x41, 0x00, 0x02, 0x04, 0x08, 0x10, 0x20, 0x00, 
-	0x41, 0x41, 0x7f, 0x00, 0x04, 0x02, 0x01, 0x02, 0x04, 0x40, 0x40, 0x40, 0x40, 0x40, 0x00, 0x01, 
-	0x02, 0x04, 0x00, 0x20, 0x54, 0x54, 0x54, 0x78, 0x7f, 0x48, 0x44, 0x44, 0x38, 0x38, 0x44, 0x44, 
-	0x44, 0x20, 0x38, 0x44, 0x44, 0x48, 0x7f, 0x38, 0x54, 0x54, 0x54, 0x18, 0x08, 0x7e, 0x09, 0x01, 
-	0x02, 0x0c, 0x52, 0x52, 0x52, 0x3e, 0x7f, 0x08, 0x04, 0x04, 0x78, 0x00, 0x44, 0x7d, 0x40, 0x00, 
-	0x20, 0x40, 0x44, 0x3d, 0x00, 0x7f, 0x10, 0x28, 0x44, 0x00, 0x00, 0x41, 0x7f, 0x40, 0x00, 0x7c, 
-	0x04, 0x18, 0x04, 0x78, 0x7c, 0x08, 0x04, 0x04, 0x78, 0x38, 0x44, 0x44, 0x44, 0x38, 0x7c, 0x14, 
-	0x14, 0x14, 0x08, 0x08, 0x14, 0x14, 0x18, 0x7c, 0x7c, 0x08, 0x04, 0x04, 0x08, 0x48, 0x54, 0x54, 
-	0x54, 0x20, 0x04, 0x3f, 0x44, 0x40, 0x20, 0x3c, 0x40, 0x40, 0x20, 0x7c, 0x1c, 0x20, 0x40, 0x20, 
-	0x1c, 0x3c, 0x40, 0x30, 0x40, 0x3c, 0x44, 0x28, 0x10, 0x28, 0x44, 0x0c, 0x50, 0x50, 0x50, 0x3c, 
-	0x44, 0x64, 0x54, 0x4c, 0x44, 0x00, 0x08, 0x36, 0x41, 0x00, 0x00, 0x00, 0x7f, 0x00, 0x00, 0x00, 
-	0x41, 0x36, 0x08, 0x00, 0x02, 0x01, 0x02, 0x01, 0x00
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x5f, 0x00, 0x00, 0x00, 0x07, 0x00, 0x07, 0x00, 0x14, 0x7f, 0x14, 
+  0x7f, 0x14, 0x24, 0x2a, 0x7f, 0x2a, 0x12, 0x23, 0x13, 0x08, 0x64, 0x62, 0x36, 0x49, 0x55, 0x22, 
+  0x50, 0x00, 0x05, 0x03, 0x00, 0x00, 0x00, 0x1c, 0x22, 0x41, 0x00, 0x00, 0x41, 0x22, 0x1c, 0x00, 
+  0x14, 0x08, 0x3e, 0x08, 0x14, 0x08, 0x08, 0x3e, 0x08, 0x08, 0x00, 0x50, 0x30, 0x00, 0x00, 0x08, 
+  0x08, 0x08, 0x08, 0x08, 0x00, 0x60, 0x60, 0x00, 0x00, 0x20, 0x10, 0x08, 0x04, 0x02, 0x3e, 0x51, 
+  0x49, 0x45, 0x3e, 0x00, 0x42, 0x7f, 0x40, 0x00, 0x42, 0x61, 0x51, 0x49, 0x46, 0x21, 0x41, 0x45, 
+  0x4b, 0x31, 0x18, 0x14, 0x12, 0x7f, 0x10, 0x27, 0x45, 0x45, 0x45, 0x39, 0x3c, 0x4a, 0x49, 0x49, 
+  0x30, 0x01, 0x71, 0x09, 0x05, 0x03, 0x36, 0x49, 0x49, 0x49, 0x36, 0x06, 0x49, 0x49, 0x29, 0x1e, 
+  0x00, 0x36, 0x36, 0x00, 0x00, 0x00, 0x56, 0x36, 0x00, 0x00, 0x08, 0x14, 0x22, 0x41, 0x00, 0x14, 
+  0x14, 0x14, 0x14, 0x14, 0x00, 0x41, 0x22, 0x14, 0x08, 0x02, 0x01, 0x51, 0x09, 0x06, 0x32, 0x49, 
+  0x79, 0x41, 0x3e, 0x7e, 0x11, 0x11, 0x11, 0x7e, 0x7f, 0x49, 0x49, 0x49, 0x36, 0x3e, 0x41, 0x41, 
+  0x41, 0x22, 0x7f, 0x41, 0x41, 0x22, 0x1c, 0x7f, 0x49, 0x49, 0x49, 0x41, 0x7f, 0x09, 0x09, 0x09, 
+  0x01, 0x3e, 0x41, 0x49, 0x49, 0x7a, 0x7f, 0x08, 0x08, 0x08, 0x7f, 0x00, 0x41, 0x7f, 0x41, 0x00, 
+  0x20, 0x40, 0x41, 0x3f, 0x01, 0x7f, 0x08, 0x14, 0x22, 0x41, 0x7f, 0x40, 0x40, 0x40, 0x40, 0x7f, 
+  0x02, 0x0c, 0x02, 0x7f, 0x7f, 0x04, 0x08, 0x10, 0x7f, 0x3e, 0x41, 0x41, 0x41, 0x3e, 0x7f, 0x09, 
+  0x09, 0x09, 0x06, 0x3e, 0x41, 0x51, 0x21, 0x5e, 0x7f, 0x09, 0x19, 0x29, 0x46, 0x46, 0x49, 0x49, 
+  0x49, 0x31, 0x01, 0x01, 0x7f, 0x01, 0x01, 0x3f, 0x40, 0x40, 0x40, 0x3f, 0x1f, 0x20, 0x40, 0x20, 
+  0x1f, 0x3f, 0x40, 0x38, 0x40, 0x3f, 0x63, 0x14, 0x08, 0x14, 0x63, 0x07, 0x08, 0x70, 0x08, 0x07, 
+  0x61, 0x51, 0x49, 0x45, 0x43, 0x00, 0x7f, 0x41, 0x41, 0x00, 0x02, 0x04, 0x08, 0x10, 0x20, 0x00, 
+  0x41, 0x41, 0x7f, 0x00, 0x04, 0x02, 0x01, 0x02, 0x04, 0x40, 0x40, 0x40, 0x40, 0x40, 0x00, 0x01, 
+  0x02, 0x04, 0x00, 0x20, 0x54, 0x54, 0x54, 0x78, 0x7f, 0x48, 0x44, 0x44, 0x38, 0x38, 0x44, 0x44, 
+  0x44, 0x20, 0x38, 0x44, 0x44, 0x48, 0x7f, 0x38, 0x54, 0x54, 0x54, 0x18, 0x08, 0x7e, 0x09, 0x01, 
+  0x02, 0x0c, 0x52, 0x52, 0x52, 0x3e, 0x7f, 0x08, 0x04, 0x04, 0x78, 0x00, 0x44, 0x7d, 0x40, 0x00, 
+  0x20, 0x40, 0x44, 0x3d, 0x00, 0x7f, 0x10, 0x28, 0x44, 0x00, 0x00, 0x41, 0x7f, 0x40, 0x00, 0x7c, 
+  0x04, 0x18, 0x04, 0x78, 0x7c, 0x08, 0x04, 0x04, 0x78, 0x38, 0x44, 0x44, 0x44, 0x38, 0x7c, 0x14, 
+  0x14, 0x14, 0x08, 0x08, 0x14, 0x14, 0x18, 0x7c, 0x7c, 0x08, 0x04, 0x04, 0x08, 0x48, 0x54, 0x54, 
+  0x54, 0x20, 0x04, 0x3f, 0x44, 0x40, 0x20, 0x3c, 0x40, 0x40, 0x20, 0x7c, 0x1c, 0x20, 0x40, 0x20, 
+  0x1c, 0x3c, 0x40, 0x30, 0x40, 0x3c, 0x44, 0x28, 0x10, 0x28, 0x44, 0x0c, 0x50, 0x50, 0x50, 0x3c, 
+  0x44, 0x64, 0x54, 0x4c, 0x44, 0x00, 0x08, 0x36, 0x41, 0x00, 0x00, 0x00, 0x7f, 0x00, 0x00, 0x00, 
+  0x41, 0x36, 0x08, 0x00, 0x02, 0x01, 0x02, 0x01, 0x00
 };
-
 // ===============================================================
 // --- FILE MELODIES.H ĐÃ ĐƯỢC TÍCH HỢP VÀO ĐÂY ---
 // ===============================================================
@@ -404,24 +397,20 @@ int mario_melody[] = {
   NOTE_E7, NOTE_E7, 0, NOTE_E7, 0, NOTE_C7, NOTE_E7, 0,
   NOTE_G7, 0, 0,  0, NOTE_G6, 0, 0, 0 };
 int mario_tempo[] = { 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12 };
-
 int tetris_melody[] = {
   NOTE_E5, NOTE_B4, NOTE_C5, NOTE_D5, NOTE_C5, NOTE_B4,
   NOTE_A4, NOTE_A4, NOTE_C5, NOTE_E5, NOTE_D5, NOTE_C5,
   NOTE_B4, NOTE_B4, NOTE_C5, NOTE_D5, NOTE_E5,
   NOTE_C5, NOTE_A4, NOTE_A4, 0 };
 int tetris_tempo[] = { 4, 8, 8, 4, 8, 8, 4, 8, 8, 4, 8, 8, 4, 8, 8, 4, 4, 4, 4, 4, 4 };
-
 int godfather_melody[] = {
   NOTE_E4, NOTE_A4, NOTE_C5, NOTE_A4, NOTE_E4, NOTE_A4, NOTE_D5, NOTE_B4,
   NOTE_E4, NOTE_G4, NOTE_B4, NOTE_G4, NOTE_E4, NOTE_G4, NOTE_A4, NOTE_F4 };
 int godfather_tempo[] = { 4, 4, 4, 8, 8, 4, 4, 4, 4, 4, 4, 8, 8, 4, 4, 4 };
-
 int got_melody[] = {
   NOTE_G4, NOTE_C5, NOTE_DS5, NOTE_F5, NOTE_G4, NOTE_C5, NOTE_DS5, NOTE_F5,
   NOTE_G4, NOTE_C5, NOTE_DS5, NOTE_F5, NOTE_G4, NOTE_C5, NOTE_DS5, NOTE_F5 };
 int got_tempo[] = { 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12 };
-
 Song songbook[] = {
   {"Super Mario", mario_melody, mario_tempo, sizeof(mario_melody)/sizeof(int)},
   {"Tetris", tetris_melody, tetris_tempo, sizeof(tetris_melody)/sizeof(int)},
@@ -429,37 +418,32 @@ Song songbook[] = {
   {"Game of Thrones", got_melody, got_tempo, sizeof(got_melody)/sizeof(int)}
 };
 const int songCount = sizeof(songbook)/sizeof(Song);
-
 // --- Cấu hình OLED
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 #define OLED_RESET    -1
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-
 // --- Cấu hình Web & Mạng
 ESP8266WebServer server(80);
 DNSServer dnsServer;
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "time.google.com", 7 * 3600);
-
 // --- Chân còi
 const int buzzerPin = 15;
-
 // --- Cấu trúc lưu trữ (SPIFFS) ---
 #define MAX_EVENTS 5
+#define SETTINGS_MAGIC_KEY 0xDEADBEEF
+#define EVENT_MAGIC_KEY 0xCAFED00D
 struct Event { char name[32]; uint32_t timestamp; };
 struct Settings {
   char deviceName[32]; char apPassword[64]; bool apMode;
   uint32_t activationDate; Event events[MAX_EVENTS]; int eventCount;
   int snake_highscore; int space_highscore;
-  char teleprompterText[512]; // Dành cho Bảng tin cuộn
 };
 Settings settings;
-
 // --- Enum cho các chế độ hoạt động ---
 enum AppMode { APP_MAIN_ROTATION, APP_SNAKE_GAME, APP_SPACE_DEFENDER };
 AppMode currentApp = APP_MAIN_ROTATION;
-
 // --- Biến toàn cục ---
 int currentScreen = 0;
 String oledText = "cPod Ultra";
@@ -472,7 +456,6 @@ String scrollingText = "cPod Ultra - Now with NAT Routing and SPIFFS!";
 int scroll_x_position = SCREEN_WIDTH;
 const char* signatureTexts[] = {"cPod Ultra", "By Hieu Le", "ESP8266 Inside", "Game On!"};
 const int numSignatureTexts = sizeof(signatureTexts) / sizeof(char*);
-
 // --- Biến cho Game Rắn ---
 std::vector<std::pair<int, int>> snake;
 std::pair<int, int> food;
@@ -480,7 +463,6 @@ enum SnakeDirection { UP, DOWN, LEFT, RIGHT };
 SnakeDirection snakeDir = RIGHT;
 bool snakeGameOver = false;
 int snake_score = 0;
-
 // --- Biến cho Game Space Defender ---
 int playerX = 60;
 struct Bullet { int x, y; bool active; };
@@ -489,21 +471,13 @@ struct Alien { int x, y; bool active; };
 std::vector<Alien> aliens;
 int space_score = 0;
 bool spaceGameOver = false;
-
 // --- Biến cho biểu đồ Heap ---
 int heap_history[SCREEN_WIDTH];
 int heap_history_index = 0;
-
 // --- Biến cho Marquee chạy viền ---
 int marquee_x = 0, marquee_y = 8, marquee_dir = 0;
 int marquee_char_index = 0;
 String marqueeText = " cPod Ultra by Hieu Le - Have a nice day! --- ";
-
-// --- Biến cho Bảng tin cuộn ---
-std::vector<String> teleprompterLines;
-int teleprompter_y = SCREEN_HEIGHT;
-int teleprompter_total_height = 0;
-
 // --- Biến cho nhạc ---
 int currentSongIndex = 0;
 bool isPlayingMusic = false;
@@ -512,7 +486,6 @@ int current_note_index = 0;
 int currentNoteForVisualizer = 0;
 static const unsigned char PROGMEM wifi_icon[]={0x0,0x0,0x0,0x0,0x7,0x0,0x8,0x80,0x18,0x80,0x20,0x40,0x20,0x40,0x42,0x20,0x42,0x20,0x0,0x0,0x81,0x10,0x81,0x10,0x0,0x0,0x40,0x8,0x40,0x8,0x0,0x0};
 static const unsigned char PROGMEM ram_icon[]={0xff,0xff,0x81,0x81,0x81,0x81,0x81,0x81,0x81,0x81,0x81,0x81,0xff,0xff,0x0,0x0,0xff,0xff,0x81,0x81,0x81,0x81,0x81,0x81,0x81,0x81,0x81,0x81,0xff,0xff,0x0,0x0};
-
 // --- Prototypes ---
 void handleRoot(); void handleNotFound(); void handleStatus();
 void handleSetText(); void loadSettings(); void saveSettings();
@@ -535,22 +508,20 @@ void loop_space_defender(); void setup_space_defender(); void drawSpaceDefenderS
 void handleStartSpace(); void handleSpaceLeft(); void handleSpaceRight(); void handleSpaceShoot();
 void drawScreenByIndex(int index, int x_offset); void drawScreenWithAnimation(int oldScreen, int newScreen, int offset);
 void playSong(int songIndex);
-void handleSetTeleprompterText(); void drawTeleprompterScreen(int x_offset); void wrapTeleprompterText();
-
 // ===============================================================
 // --- TOÀN BỘ CODE HTML, CSS, JAVASCRIPT ---
 // ===============================================================
 const char index_html[] PROGMEM = R"rawliteral(
-<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>cPod Ultra</title><style>:root{--primary-color:#0A84FF;--background-color:#000000;--card-color:rgba(28, 28, 30, 0.7);--text-color:#ffffff;--text-secondary-color:#8e8e93;--border-radius:20px;--danger-color:#FF453A;--warning-color:#FF9F0A}@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(135deg,#000000,#1c1c1e);color:var(--text-color);margin:0;padding:0;display:flex;height:100vh;overflow:hidden}.sidebar{width:240px;background-color:rgba(20,20,22,0.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:20px;display:flex;flex-direction:column;border-right:1px solid rgba(255,255,255,0.1)}.sidebar h1{font-weight:600;font-size:1.8em;margin-bottom:30px;text-align:center}.sidebar-nav{display:flex;flex-direction:column;gap:10px}.sidebar-nav a{color:var(--text-secondary-color);text-decoration:none;padding:15px;border-radius:10px;font-weight:500;transition:all .2s ease;display:flex;align-items:center;gap:15px}.sidebar-nav a:hover,.sidebar-nav a.active{color:var(--text-color);background-color:rgba(255,255,255,0.1)}.main-content{flex-grow:1;padding:40px;overflow-y:auto}.page{display:none;animation:fadeIn 0.5s ease-in-out}.page.active{display:block}h2{font-size:2em;font-weight:600;margin-bottom:20px;border-bottom:1px solid #333;padding-bottom:10px}h3{color:var(--text-secondary-color);text-transform:uppercase;font-size:0.9em;letter-spacing:0.5px;margin:20px 0 15px 0}.card{background-color:var(--card-color);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:20px;border-radius:var(--border-radius);margin-bottom:20px;box-shadow:0 10px 30px rgba(0,0,0,0.2)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px}.button,a.button{background-color:#333;color:var(--text-color);padding:15px;border:none;border-radius:15px;font-size:1em;font-weight:500;cursor:pointer;transition:all .2s ease;text-align:center;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:8px}.button:hover{transform:translateY(-3px);box-shadow:0 10px 20px rgba(0,0,0,0.3)}.button-primary{background:linear-gradient(135deg,var(--primary-color),#5856D6);color:white}.button-danger{background:linear-gradient(135deg,var(--danger-color),#FF6B6B)}.status-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;text-align:center}.status-item strong{display:block;color:var(--text-color);font-size:1.8em;font-weight:600;margin-top:5px}.music-player{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:15px;background-color:#333}#songTitle{flex-grow:1;text-align:center;font-weight:500}.d-pad{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr 1fr;gap:10px;max-width:200px;margin:auto}.d-pad .button{padding:20px}.d-pad #btnUp{grid-column:2;grid-row:1}.d-pad #btnDown{grid-column:2;grid-row:3}.d-pad #btnLeft{grid-column:1;grid-row:2}.d-pad #btnRight{grid-column:3;grid-row:2}.hidden{display:none}</style></head><body><div class="sidebar"><a href="#" onclick="showPage('dashboard')"><h1>cPod Ultra</h1></a><nav class="sidebar-nav"><a href="#" class="active" onclick="showPage('dashboard')">🏠<span>Dashboard</span></a><a href="#" onclick="showPage('apps')">📱<span>Ứng dụng</span></a><a href="#" onclick="showPage('games')">🎮<span>Trò chơi</span></a><a href="#" onclick="showPage('settings')">⚙️<span>Cài đặt</span></a></nav></div><div class="main-content"><div id="dashboard" class="page active"><h2>Dashboard</h2><div class="card"><h3>Trạng thái hệ thống</h3><div class="status-grid"><div class="status-item">Wi-Fi<strong id="wifi-ssid">...</strong></div><div class="status-item">Tín hiệu<strong id="rssi">...</strong></div><div class="status-item">Bộ nhớ<strong id="heap">...</strong></div><div class="status-item">Thời gian<strong id="time">...</strong></div></div></div><div class="card"><h3>Điều khiển OLED</h3><div class="grid"><input id="textInput" type="text" placeholder="Gửi chữ lên OLED..." style="border-radius:15px;border:none;background-color:#333;color:white;padding:15px;text-align:center;grid-column:1 / -1;" onchange="sendText(this.value)"><button class="button" onclick="sendCommand('/next-screen')">➡️<span>Kế tiếp</span></button><button class="button" onclick="sendCommand('/toggle-rotation')">⏸️<span>Dừng/Xoay</span></button></div></div><div class="card"><h3>Âm nhạc</h3><div class="music-player"><button class="button" onclick="sendCommand('/prev_song')">⏮️</button><span id="songTitle">...</span><button class="button" onclick="sendCommand('/next_song')">⏭️</button></div></div></div><div id="apps" class="page"><h2>Ứng dụng</h2><div class="grid"><a class="button" href="/events">📅<span>Sự kiện</span></a><a class="button" href="/calendar">🗓️<span>Lịch</span></a></div></div><div id="games" class="page"><h2>Trò chơi</h2><div id="game-selection"><div class="card"><div class="grid"><button class="button button-primary" onclick="showGameUI('snake')">🐍<span>Rắn Săn Mồi</span></button><button class="button button-primary" onclick="showGameUI('space')">🚀<span>Space Defender</span></button></div></div></div><div id="game-ui" class="hidden"><div class="card"><h3 id="gameTitle"></h3><div class="status-grid"><div class="status-item">Điểm<strong id="score">0</strong></div><div class="status-item">Điểm cao<strong id="highscore">0</strong></div></div><div class="d-pad" id="dpad-snake"><button id="btnUp" class="button">⬆️</button><button id="btnLeft" class="button">⬅️</button><button id="btnRight" class="button">➡️</button><button id="btnDown" class="button">⬇️</button></div><div class="d-pad hidden" id="dpad-space"><button id="btnLeftSpace" class="button">⬅️</button><button id="btnRightSpace" class="button">➡️</button><button id="btnShoot" class="button button-danger">💥</button></div><button class="button button-danger" onclick="exitGame()" style="margin-top:20px;width:100%">Thoát Game</button></div></div></div><div id="settings" class="page"><h2>Cài đặt</h2><div class="grid"><a class="button" href="/about">ℹ️<span>Giới thiệu</span></a><a class="button" href="/wifi">📶<span>Wi-Fi</span></a><a class="button" href="/hotspot">📡<span>Phát mạng</span></a></div></div></div><script>let ws;const pages=document.querySelectorAll('.page');const navLinks=document.querySelectorAll('.sidebar-nav a');function showPage(pageId){pages.forEach(p=>p.classList.remove('active'));navLinks.forEach(l=>l.classList.remove('active'));document.getElementById(pageId).classList.add('active');document.querySelector(`.sidebar-nav a[onclick="showPage('${pageId}')"]`).classList.add('active')}function sendCommand(cmd){fetch(cmd).catch(err=>console.error("Error:",err))}function sendText(val){fetch(`/set-text?text=${encodeURIComponent(val)}`).catch(err=>console.error("Error:",err))}function updateStatus(){fetch("/status").then(res=>res.json()).then(data=>{document.getElementById("wifi-ssid").innerText=data.ssid;document.getElementById("rssi").innerText=data.rssi+" dBm";document.getElementById("heap").innerText=data.heap+" bytes";document.getElementById("time").innerText=data.time;document.getElementById("highscore").innerText=data.highscore;if(data.song)document.getElementById("songTitle").innerText=data.song}).catch(err=>console.error("Status Error:",err))}function showGameUI(game){document.getElementById('game-selection').classList.add('hidden');document.getElementById('game-ui').classList.remove('hidden');if(game==='snake'){document.getElementById('gameTitle').innerText="Rắn Săn Mồi";document.getElementById('dpad-snake').classList.remove('hidden');document.getElementById('dpad-space').classList.add('hidden');sendCommand('/start_snake')}else if(game==='space'){document.getElementById('gameTitle').innerText="Space Defender";document.getElementById('dpad-snake').classList.add('hidden');document.getElementById('dpad-space').classList.remove('hidden');sendCommand('/start_space')}}function exitGame(){document.getElementById('game-selection').classList.remove('hidden');document.getElementById('game-ui').classList.add('hidden');sendCommand('/stop_game')}document.getElementById("btnUp").addEventListener("click",()=>sendCommand("/snake_up"));document.getElementById("btnDown").addEventListener("click",()=>sendCommand("/snake_down"));document.getElementById("btnLeft").addEventListener("click",()=>sendCommand("/snake_left"));document.getElementById("btnRight").addEventListener("click",()=>sendCommand("/snake_right"));document.getElementById("btnLeftSpace").addEventListener("click",()=>sendCommand("/space_left"));document.getElementById("btnRightSpace").addEventListener("click",()=>sendCommand("/space_right"));document.getElementById("btnShoot").addEventListener("click",()=>sendCommand("/space_shoot"));function connectWebSocket(){ws=new WebSocket(`ws://${window.location.host}/ws`);ws.onmessage=function(event){const data=JSON.parse(event.data);if(data.score!==undefined)document.getElementById('score').innerText=data.score};ws.onclose=function(e){setTimeout(connectWebSocket,2000)}}document.addEventListener("DOMContentLoaded",function(){updateStatus();setInterval(updateStatus,5000);connectWebSocket();showPage('dashboard')});</script></body></html>
+<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>cPod Ultra</title><style>:root{--primary-color:#0A84FF;--background-color:#000000;--card-color:rgba(28, 28, 30, 0.7);--text-color:#ffffff;--text-secondary-color:#8e8e93;--border-radius:20px;--danger-color:#FF453A;--warning-color:#FF9F0A}@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(135deg,#000000,#1c1c1e);color:var(--text-color);margin:0;padding:0;display:flex;height:100vh;overflow:hidden}.sidebar{width:240px;background-color:rgba(20,20,22,0.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:20px;display:flex;flex-direction:column;border-right:1px solid rgba(255,255,255,0.1)}.sidebar h1{font-weight:600;font-size:1.8em;margin-bottom:30px;text-align:center}.sidebar-nav{display:flex;flex-direction:column;gap:10px}.sidebar-nav a{color:var(--text-secondary-color);text-decoration:none;padding:15px;border-radius:10px;font-weight:500;transition:all .2s ease;display:flex;align-items:center;gap:15px}.sidebar-nav a:hover,.sidebar-nav a.active{color:var(--text-color);background-color:rgba(255,255,255,0.1)}.main-content{flex-grow:1;padding:40px;overflow-y:auto}.page{display:none;animation:fadeIn 0.5s ease-in-out}.page.active{display:block}h2{font-size:2em;font-weight:600;margin-bottom:20px;border-bottom:1px solid #333;padding-bottom:10px}h3{color:var(--text-secondary-color);text-transform:uppercase;font-size:0.9em;letter-spacing:0.5px;margin:20px 0 15px 0}.card{background-color:var(--card-color);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:20px;border-radius:var(--border-radius);margin-bottom:20px;box-shadow:0 10px 30px rgba(0,0,0,0.2)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px}.button,a.button{background-color:#333;color:var(--text-color);padding:15px;border:none;border-radius:15px;font-size:1em;font-weight:500;cursor:pointer;transition:all .2s ease;text-align:center;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:8px}.button:hover{transform:translateY(-3px);box-shadow:0 10px 20px rgba(0,0,0,0.3)}.button-primary{background:linear-gradient(135deg,var(--primary-color),#5856D6);color:white}.button-danger{background:linear-gradient(135deg,var(--danger-color),#FF6B6B)}.status-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;text-align:center}.status-item strong{display:block;color:var(--text-color);font-size:1.8em;font-weight:600;margin-top:5px}.music-player{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:15px;background-color:#333}#songTitle{flex-grow:1;text-align:center;font-weight:500}.d-pad{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr 1fr;gap:10px;max-width:200px;margin:auto}.d-pad .button{padding:20px}.d-pad #btnUp{grid-column:2;grid-row:1}.d-pad #btnDown{grid-column:2;grid-row:3}.d-pad #btnLeft{grid-column:1;grid-row:2}.d-pad #btnRight{grid-column:3;grid-row:2}.hidden{display:none}</style></head><body><div class="sidebar"><a href="#" onclick="showPage('dashboard')"><h1>cPod Ultra</h1></a><nav class="sidebar-nav"><a href="#" class="active" onclick="showPage('dashboard')">🏠<span>Dashboard</span></a><a href="#" onclick="showPage('apps')">📱<span>Ứng dụng</span></a><a href="#" onclick="showPage('games')">🎮<span>Trò chơi</span></a><a href="#" onclick="showPage('settings')">⚙️<span>Cài đặt</span></a></nav></div><div class="main-content"><div id="dashboard" class="page active"><h2>Dashboard</h2><div class="card"><h3>Trạng thái hệ thống</h3><div class="status-grid"><div class="status-item">Wi-Fi<strong id="wifi-ssid">...</strong></div><div class="status-item">Tín hiệu<strong id="rssi">...</strong></div><div class="status-item">Bộ nhớ<strong id="heap">...</strong></div><div class="status-item">Thời gian<strong id="time">...</strong></div></div></div><div class="card"><h3>Điều khiển OLED</h3><div class="grid"><input id="textInput" type="text" placeholder="Gửi chữ lên OLED..." style="border-radius:15px;border:none;background-color:#333;color:white;padding:15px;text-align:center;grid-column:1 / -1;" onchange="sendText(this.value)"><button class="button" onclick="sendCommand('/next-screen')">➡️<span>Kế tiếp</span></button><button class="button" onclick="sendCommand('/toggle-rotation')">⏸️<span>Dừng/Xoay</span></button></div></div><div class="card"><h3>Âm nhạc</h3><div class="music-player"><button class="button" onclick="sendCommand('/prev_song')">⏮️</button><span id="songTitle">...</span><button class="button" onclick="sendCommand('/next_song')">⏭️</button></div></div></div><div id="apps" class="page"><h2>Ứng dụng</h2><div class="grid"><a class="button" href="/events">📅<span>Sự kiện</span></a><a class="button" href="/calendar">🗓️<span>Lịch</span></a></div></div><div id="games" class="page"><h2>Trò chơi</h2><div id="game-selection"><div class="card"><div class="grid"><button class="button button-primary" onclick="showGameUI('snake')">🐍<span>Rắn Săn Mồi</span></button><button class="button button-primary" onclick="showGameUI('space')">🚀<span>Space Defender</span></button></div></div></div><div id="game-ui" class="hidden"><div class="card"><h3 id="gameTitle"></h3><div class="status-grid"><div class="status-item">Điểm<strong id="score">0</strong></div><div class="status-item">Điểm cao<strong id="highscore">0</strong></div></div><div class="d-pad" id="dpad-snake"><button id="btnUp" class="button">⬆️</button><button id="btnLeft" class="button">⬅️</button><button id="btnRight" class="button">➡️</button><button id="btnDown" class="button">⬇️</button></div><div class="d-pad hidden" id="dpad-space"><button id="btnLeftSpace" class="button">⬅️</button><button id="btnRightSpace" class="button">➡️</button><button id="btnShoot" class="button button-danger">💥</button></div><button class="button button-danger" onclick="exitGame()" style="margin-top:20px;width:100%">Thoát Game</button></div></div></div><div id="settings" class="page"><h2>Cài đặt</h2><div class="grid"><a class="button" href="/about">ℹ️<span>Giới thiệu</span></a><a class="button" href="/wifi">📶<span>Wi-Fi</span></a><a class="button" href="/hotspot">📡<span>Phát mạng</span></a></div></div></div><s`+`cript>let ws;const pages=document.querySelectorAll('.page');const navLinks=document.querySelectorAll('.sidebar-nav a');function showPage(pageId){pages.forEach(p=>p.classList.remove('active'));navLinks.forEach(l=>l.classList.remove('active'));document.getElementById(pageId).classList.add('active');document.querySelector(`.sidebar-nav a[onclick="showPage('${pageId}')"]`).classList.add('active')}function sendCommand(cmd){fetch(cmd).catch(err=>console.error("Error:",err))}function sendText(val){fetch(`/set-text?text=${encodeURIComponent(val)}`).catch(err=>console.error("Error:",err))}function updateStatus(){fetch("/status").then(res=>res.json()).then(data=>{document.getElementById("wifi-ssid").innerText=data.ssid;document.getElementById("rssi").innerText=data.rssi+" dBm";document.getElementById("heap").innerText=data.heap+" bytes";document.getElementById("time").innerText=data.time;document.getElementById("highscore").innerText=data.highscore;if(data.song)document.getElementById("songTitle").innerText=data.song}).catch(err=>console.error("Status Error:",err))}function showGameUI(game){document.getElementById('game-selection').classList.add('hidden');document.getElementById('game-ui').classList.remove('hidden');if(game==='snake'){document.getElementById('gameTitle').innerText="Rắn Săn Mồi";document.getElementById('dpad-snake').classList.remove('hidden');document.getElementById('dpad-space').classList.add('hidden');sendCommand('/start_snake')}else if(game==='space'){document.getElementById('gameTitle').innerText="Space Defender";document.getElementById('dpad-snake').classList.add('hidden');document.getElementById('dpad-space').classList.remove('hidden');sendCommand('/start_space')}}function exitGame(){document.getElementById('game-selection').classList.remove('hidden');document.getElementById('game-ui').classList.add('hidden');sendCommand('/stop_game')}document.getElementById("btnUp").addEventListener("click",()=>sendCommand("/snake_up"));document.getElementById("btnDown").addEventListener("click",()=>sendCommand("/snake_down"));document.getElementById("btnLeft").addEventListener("click",()=>sendCommand("/snake_left"));document.getElementById("btnRight").addEventListener("click",()=>sendCommand("/snake_right"));document.getElementById("btnLeftSpace").addEventListener("click",()=>sendCommand("/space_left"));document.getElementById("btnRightSpace").addEventListener("click",()=>sendCommand("/space_right"));document.getElementById("btnShoot").addEventListener("click",()=>sendCommand("/space_shoot"));function connectWebSocket(){ws=new WebSocket(`ws://${window.location.host}/ws`);ws.onmessage=function(event){const data=JSON.parse(event.data);if(data.score!==undefined)document.getElementById('score').innerText=data.score};ws.onclose=function(e){setTimeout(connectWebSocket,2000)}}document.addEventListener("DOMContentLoaded",function(){updateStatus();setInterval(updateStatus,5000);connectWebSocket();showPage('dashboard')});</s`+`cript></body></html>
 )rawliteral";
 const char events_html[] PROGMEM = R"rawliteral(
-<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>cPod Ultra - Sự kiện</title><style>:root{--primary-color:#0A84FF;--background-color:#000000;--card-color:rgba(28, 28, 30, 0.7);--text-color:#ffffff;--text-secondary-color:#8e8e93;--border-radius:20px}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background-color:var(--background-color);color:var(--text-color);margin:0;padding:40px}.container{width:100%;max-width:600px;margin:auto}h1{color:var(--text-color);text-align:center;font-weight:600;margin-bottom:30px}.card{background-color:var(--card-color);backdrop-filter:blur(20px);padding:20px;border-radius:var(--border-radius);margin-bottom:20px}.button,a.button{background-color:#333;color:var(--text-color);padding:15px;border:none;border-radius:15px;font-size:1em;font-weight:500;cursor:pointer;transition:all .2s ease;text-align:center;text-decoration:none;display:block;margin-top:20px}.button:hover{transform:translateY(-3px);background-color:#444}.button-primary{background:linear-gradient(135deg,var(--primary-color),#5856D6);color:white}.button-danger{background-color:#ff3b30;width:auto;padding:10px 15px;font-size:0.9em}.event-list{list-style:none;padding:0}.event-item{padding:15px 5px;border-bottom:1px solid #333;display:flex;justify-content:space-between;align-items:center}.event-item:last-child{border-bottom:none}.event-details{flex-grow:1}.event-name{font-size:1.1em;font-weight:500}.event-date{color:var(--text-secondary-color);font-size:0.9em}</style></head><body><div class="container"><h1>Đếm ngược Sự kiện</h1><div class="card"><ul id="eventList" class="event-list"><li>Đang tải...</li></ul><a href="/add_event" class="button button-primary">Thêm sự kiện mới</a></div><a href="/" class="button">Quay lại</a></div><script>function deleteEvent(id){if(confirm("Bạn có chắc muốn xóa sự kiện này?")){fetch(`/delete_event?id=${id}`).then(()=>{loadEvents()})}}function loadEvents(){fetch("/get_events").then(res=>res.json()).then(data=>{const list=document.getElementById("eventList");list.innerHTML="";if(data.length===0){list.innerHTML="<li style='text-align:center;color:var(--text-secondary-color)'>Chưa có sự kiện nào.</li>"}data.forEach(event=>{const li=document.createElement("li");li.className="event-item";li.innerHTML=`<div class="event-details"><div class="event-name">${event.name}</div><div class="event-date">${event.date}</div></div><button class="button button-danger" onclick="deleteEvent(${event.id})">Xóa</button>`;list.appendChild(li)})})}document.addEventListener("DOMContentLoaded",loadEvents);</script></body></html>
+<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>cPod Ultra - Sự kiện</title><style>:root{--primary-color:#0A84FF;--background-color:#000000;--card-color:rgba(28, 28, 30, 0.7);--text-color:#ffffff;--text-secondary-color:#8e8e93;--border-radius:20px}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background-color:var(--background-color);color:var(--text-color);margin:0;padding:40px}.container{width:100%;max-width:600px;margin:auto}h1{color:var(--text-color);text-align:center;font-weight:600;margin-bottom:30px}.card{background-color:var(--card-color);backdrop-filter:blur(20px);padding:20px;border-radius:var(--border-radius);margin-bottom:20px}.button,a.button{background-color:#333;color:var(--text-color);padding:15px;border:none;border-radius:15px;font-size:1em;font-weight:500;cursor:pointer;transition:all .2s ease;text-align:center;text-decoration:none;display:block;margin-top:20px}.button:hover{transform:translateY(-3px);background-color:#444}.button-primary{background:linear-gradient(135deg,var(--primary-color),#5856D6);color:white}.button-danger{background-color:#ff3b30;width:auto;padding:10px 15px;font-size:0.9em}.event-list{list-style:none;padding:0}.event-item{padding:15px 5px;border-bottom:1px solid #333;display:flex;justify-content:space-between;align-items:center}.event-item:last-child{border-bottom:none}.event-details{flex-grow:1}.event-name{font-size:1.1em;font-weight:500}.event-date{color:var(--text-secondary-color);font-size:0.9em}</style></head><body><div class="container"><h1>Đếm ngược Sự kiện</h1><div class="card"><ul id="eventList" class="event-list"><li>Đang tải...</li></ul><a href="/add_event" class="button button-primary">Thêm sự kiện mới</a></div><a href="/" class="button">Quay lại</a></div><s`+`cript>function deleteEvent(id){if(confirm("Bạn có chắc muốn xóa sự kiện này?")){fetch(`/delete_event?id=${id}`).then(()=>{loadEvents()})}}function loadEvents(){fetch("/get_events").then(res=>res.json()).then(data=>{const list=document.getElementById("eventList");list.innerHTML="";if(data.length===0){list.innerHTML="<li style='text-align:center;color:var(--text-secondary-color)'>Chưa có sự kiện nào.</li>"}data.forEach(event=>{const li=document.createElement("li");li.className="event-item";li.innerHTML=`<div class="event-details"><div class="event-name">${event.name}</div><div class="event-date">${event.date}</div></div><button class="button button-danger" onclick="deleteEvent(${event.id})">Xóa</button>`;list.appendChild(li)})})}document.addEventListener("DOMContentLoaded",loadEvents);</s`+`cript></body></html>
 )rawliteral";
 const char add_event_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>cPod Ultra - Thêm Sự kiện</title><style>:root{--primary-color:#0A84FF;--background-color:#000000;--card-color:rgba(28, 28, 30, 0.7);--text-color:#ffffff;--text-secondary-color:#8e8e93;--border-radius:20px}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background-color:var(--background-color);color:var(--text-color);margin:0;padding:40px}.container{width:100%;max-width:600px;margin:auto}h1{color:var(--text-color);text-align:center;font-weight:600;margin-bottom:30px}.card{background-color:var(--card-color);backdrop-filter:blur(20px);padding:20px;border-radius:var(--border-radius);margin-bottom:20px}.button,a.button{background-color:#333;color:var(--text-color);padding:15px;border:none;border-radius:15px;font-size:1em;font-weight:500;cursor:pointer;transition:all .2s ease;text-align:center;text-decoration:none;display:block;margin-top:20px}.button-primary{background:linear-gradient(135deg,var(--primary-color),#5856D6);color:white}input{width:100%;padding:15px;box-sizing:border-box;border-radius:15px;border:none;background-color:#333;color:var(--text-color);font-size:1em;margin-bottom:15px}label{color:var(--text-secondary-color);margin-bottom:5px;display:block;margin-left:10px}</style></head><body><div class="container"><h1>Thêm sự kiện mới</h1><div class="card"><form action="/save_event" method="POST"><label for="name">Tên sự kiện:</label><input type="text" id="name" name="name" required><label for="date">Ngày diễn ra:</label><input type="date" id="date" name="date" required><button type="submit" class="button button-primary">Lưu sự kiện</button></form></div><a href="/events" class="button">Hủy</a></div></body></html>
 )rawliteral";
 const char calendar_html[] PROGMEM = R"rawliteral(
-<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>cPod Ultra - Lịch</title><style>:root{--primary-color:#0A84FF;--background-color:#000000;--card-color:rgba(28, 28, 30, 0.7);--text-color:#ffffff;--text-secondary-color:#8e8e93;--border-radius:20px}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background-color:var(--background-color);color:var(--text-color);margin:0;padding:40px}.container{width:100%;max-width:600px;margin:auto}h1{color:var(--text-color);text-align:center;font-weight:600;margin-bottom:30px}.card{background-color:var(--card-color);backdrop-filter:blur(20px);padding:20px;border-radius:var(--border-radius);margin-bottom:20px}.button,a.button{background-color:#333;color:var(--text-color);padding:15px;border:none;border-radius:15px;font-size:1em;font-weight:500;cursor:pointer;transition:all .2s ease;text-align:center;text-decoration:none;display:block;margin-top:20px}.calendar{width:100%;text-align:center}.calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding:0 10px}.calendar-header button{background:none;border:none;color:var(--primary-color);font-size:2em;cursor:pointer;transition:transform .2s}.calendar-header button:hover{transform:scale(1.2)}.calendar-header h2{font-weight:500}.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.day-name,.day{padding:10px 5px;border-radius:10px}.day-name{font-weight:bold;color:var(--text-secondary-color);font-size:0.9em}.day.today{background-color:var(--primary-color);color:var(--background-color);font-weight:bold}.day.other-month{color:#444}</style></head><body><div class="container"><h1>Lịch</h1><div class="card"><div class="calendar"><div class="calendar-header"><button id="prevMonthBtn">&lt;</button><h2 id="monthYear"></h2><button id="nextMonthBtn">&gt;</button></div><div class="calendar-grid" id="weekdays"></div><div class="calendar-grid" id="calendarDays"></div></div><a href="/" class="button">Quay lại</a></div></div><script>const monthYearEl=document.getElementById("monthYear");const calendarDaysEl=document.getElementById("calendarDays");const weekdaysEl=document.getElementById("weekdays");const prevMonthBtn=document.getElementById("prevMonthBtn");const nextMonthBtn=document.getElementById("nextMonthBtn");let currentDate=new Date();function renderCalendar(){const today=new Date();const month=currentDate.getMonth();const year=currentDate.getFullYear();monthYearEl.textContent=`Tháng ${month+1}, ${year}`;const firstDayOfMonth=new Date(year,month,1).getDay();const daysInMonth=new Date(year,month+1,0).getDate();calendarDaysEl.innerHTML="";for(let i=0;i<firstDayOfMonth;i++){const emptyDay=document.createElement("div");emptyDay.classList.add("day");calendarDaysEl.appendChild(emptyDay)}for(let i=1;i<=daysInMonth;i++){const dayEl=document.createElement("div");dayEl.classList.add("day");dayEl.textContent=i;if(i===today.getDate()&&month===today.getMonth()&&year===today.getFullYear()){dayEl.classList.add("today")}calendarDaysEl.appendChild(dayEl)}}prevMonthBtn.addEventListener("click",()=>{currentDate.setMonth(currentDate.getMonth()-1);renderCalendar()});nextMonthBtn.addEventListener("click",()=>{currentDate.setMonth(currentDate.getMonth()+1);renderCalendar()});const weekdays=["CN","T2","T3","T4","T5","T6","T7"];weekdays.forEach(day=>{const dayEl=document.createElement("div");dayEl.classList.add("day-name");dayEl.textContent=day;weekdaysEl.appendChild(dayEl)});renderCalendar();</script></body></html>
+<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>cPod Ultra - Lịch</title><style>:root{--primary-color:#0A84FF;--background-color:#000000;--card-color:rgba(28, 28, 30, 0.7);--text-color:#ffffff;--text-secondary-color:#8e8e93;--border-radius:20px}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background-color:var(--background-color);color:var(--text-color);margin:0;padding:40px}.container{width:100%;max-width:600px;margin:auto}h1{color:var(--text-color);text-align:center;font-weight:600;margin-bottom:30px}.card{background-color:var(--card-color);backdrop-filter:blur(20px);padding:20px;border-radius:var(--border-radius);margin-bottom:20px}.button,a.button{background-color:#333;color:var(--text-color);padding:15px;border:none;border-radius:15px;font-size:1em;font-weight:500;cursor:pointer;transition:all .2s ease;text-align:center;text-decoration:none;display:block;margin-top:20px}.calendar{width:100%;text-align:center}.calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding:0 10px}.calendar-header button{background:none;border:none;color:var(--primary-color);font-size:2em;cursor:pointer;transition:transform .2s}.calendar-header button:hover{transform:scale(1.2)}.calendar-header h2{font-weight:500}.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.day-name,.day{padding:10px 5px;border-radius:10px}.day-name{font-weight:bold;color:var(--text-secondary-color);font-size:0.9em}.day.today{background-color:var(--primary-color);color:var(--background-color);font-weight:bold}.day.other-month{color:#444}</style></head><body><div class="container"><h1>Lịch</h1><div class="card"><div class="calendar"><div class="calendar-header"><button id="prevMonthBtn">&lt;</button><h2 id="monthYear"></h2><button id="nextMonthBtn">&gt;</button></div><div class="calendar-grid" id="weekdays"></div><div class="calendar-grid" id="calendarDays"></div></div><a href="/" class="button">Quay lại</a></div></div><s`+`cript>const monthYearEl=document.getElementById("monthYear");const calendarDaysEl=document.getElementById("calendarDays");const weekdaysEl=document.getElementById("weekdays");const prevMonthBtn=document.getElementById("prevMonthBtn");const nextMonthBtn=document.getElementById("nextMonthBtn");let currentDate=new Date();function renderCalendar(){const today=new Date();const month=currentDate.getMonth();const year=currentDate.getFullYear();monthYearEl.textContent=`Tháng ${month+1}, ${year}`;const firstDayOfMonth=new Date(year,month,1).getDay();const daysInMonth=new Date(year,month+1,0).getDate();calendarDaysEl.innerHTML="";for(let i=0;i<firstDayOfMonth;i++){const emptyDay=document.createElement("div");emptyDay.classList.add("day");calendarDaysEl.appendChild(emptyDay)}for(let i=1;i<=daysInMonth;i++){const dayEl=document.createElement("div");dayEl.classList.add("day");dayEl.textContent=i;if(i===today.getDate()&&month===today.getMonth()&&year===today.getFullYear()){dayEl.classList.add("today")}calendarDaysEl.appendChild(dayEl)}}prevMonthBtn.addEventListener("click",()=>{currentDate.setMonth(currentDate.getMonth()-1);renderCalendar()});nextMonthBtn.addEventListener("click",()=>{currentDate.setMonth(currentDate.getMonth()+1);renderCalendar()});const weekdays=["CN","T2","T3","T4","T5","T6","T7"];weekdays.forEach(day=>{const dayEl=document.createElement("div");dayEl.classList.add("day-name");dayEl.textContent=day;weekdaysEl.appendChild(dayEl)});renderCalendar();</s`+`cript></body></html>
 )rawliteral";
 const char settings_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>cPod Ultra - Cài đặt</title><style>:root{--primary-color:#0A84FF;--background-color:#000000;--card-color:rgba(28, 28, 30, 0.7);--text-color:#ffffff;--text-secondary-color:#8e8e93;--border-radius:20px}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background-color:var(--background-color);color:var(--text-color);margin:0;padding:40px}.container{width:100%;max-width:600px;margin:auto}h1{color:var(--text-color);text-align:center;font-weight:600;margin-bottom:30px}.card{background-color:var(--card-color);backdrop-filter:blur(20px);padding:20px;border-radius:var(--border-radius);margin-bottom:20px}.button,a.button{background-color:#333;color:var(--text-color);padding:15px;border:none;border-radius:15px;font-size:1em;font-weight:500;cursor:pointer;transition:all .2s ease;text-align:center;text-decoration:none;display:block;margin-bottom:15px}.button:hover{transform:translateY(-3px);background-color:#444}</style></head><body><div class="container"><h1>Cài đặt</h1><div class="card"><a href="/about" class="button">Giới thiệu</a><a href="/wifi" class="button">Wi-Fi</a><a href="/hotspot" class="button">Phát mạng (Hotspot)</a></div><a href="/" class="button">Quay lại</a></div></body></html>
@@ -559,12 +530,11 @@ const char about_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>cPod Ultra - Giới thiệu</title><style>:root{--primary-color:#0A84FF;--background-color:#000000;--card-color:rgba(28, 28, 30, 0.7);--text-color:#ffffff;--text-secondary-color:#8e8e93;--border-radius:20px}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background-color:var(--background-color);color:var(--text-color);margin:0;padding:40px}.container{width:100%;max-width:600px;margin:auto}h1{color:var(--text-color);text-align:center;font-weight:600;margin-bottom:30px}.card{background-color:var(--card-color);backdrop-filter:blur(20px);padding:20px;border-radius:var(--border-radius);margin-bottom:20px}.button,a.button{background-color:#333;color:var(--text-color);padding:15px;border:none;border-radius:15px;font-size:1em;font-weight:500;cursor:pointer;transition:all .2s ease;text-align:center;text-decoration:none;display:block;margin-top:20px}.button-primary{background:linear-gradient(135deg,var(--primary-color),#5856D6);color:white}input{width:100%;padding:12px;box-sizing:border-box;border-radius:12px;border:none;background-color:#333;color:var(--text-color);font-size:1em;margin-top:5px}.info-item{padding:10px 0;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #333}.info-item:last-child{border-bottom:none}.info-label{color:var(--text-secondary-color)}</style></head><body><div class="container"><h1>Giới thiệu</h1><div class="card"><form action="/save_about" method="POST"><div class="info-item"><span class="info-label">Tên thiết bị</span><input type="text" name="deviceName" value="{DEVICE_NAME}"></div><div class="info-item"><span class="info-label">Phiên bản cOS</span><span>Ultra 1.0</span></div><div class="info-item"><span class="info-label">Tên máy</span><span>cPod (Gen 1)</span></div><div class="info-item"><span class="info-label">Số máy</span><span>{SERIAL_NUMBER}</span></div><div class="info-item"><span class="info-label">Kích hoạt</span><span>{ACTIVATION_DATE}</span></div><div class="info-item"><span class="info-label">Bảo hành</span><span>{EXPIRY_DATE}</span></div><button type="submit" class="button button-primary">Lưu</button></form></div><a href="/settings" class="button">Quay lại</a></div></body></html>
 )rawliteral";
 const char wifi_html[] PROGMEM = R"rawliteral(
-<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>cPod Ultra - Cài đặt Wi-Fi</title><style>:root{--primary-color:#0A84FF;--background-color:#000000;--card-color:rgba(28, 28, 30, 0.7);--text-color:#ffffff;--text-secondary-color:#8e8e93;--border-radius:20px}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background-color:var(--background-color);color:var(--text-color);margin:0;padding:40px}.container{width:100%;max-width:600px;margin:auto}h1{color:var(--text-color);text-align:center;font-weight:600;margin-bottom:30px}.card{background-color:var(--card-color);backdrop-filter:blur(20px);padding:20px;border-radius:var(--border-radius);margin-bottom:20px}.button,a.button{background-color:#333;color:var(--text-color);padding:15px;border:none;border-radius:15px;font-size:1em;font-weight:500;cursor:pointer;transition:all .2s ease;text-align:center;text-decoration:none;display:block;margin-top:20px}.button-primary{background:linear-gradient(135deg,var(--primary-color),#5856D6);color:white}input{width:100%;padding:15px;box-sizing:border-box;border-radius:15px;border:none;background-color:#333;color:var(--text-color);font-size:1em;margin-bottom:15px}label{color:var(--text-secondary-color);margin-bottom:5px;display:block;margin-left:10px}.wifi-list{list-style:none;padding:0;max-height:200px;overflow-y:auto}.wifi-item{padding:15px;border-radius:15px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;background-color:#333}.wifi-item:hover{background-color:#444}</style></head><body><div class="container"><h1>Cài đặt Wi-Fi</h1><div class="card"><h2>Mạng khả dụng</h2><div id="wifiList" class="wifi-list"><div style="text-align:center;color:var(--text-secondary-color)">Đang quét...</div></div></div><div class="card"><h2>Kết nối mạng mới</h2><form action="/save_wifi" method="POST"><label for="ssid">Tên Wi-Fi (SSID)</label><input type="text" id="ssid" name="ssid" required><label for="password">Mật khẩu</label><input type="password" id="password" name="password"><button type="submit" class="button button-primary">Kết nối</button></form></div><a href="/settings" class="button">Quay lại</a></div><script>function scanWifi(){fetch("/scan_wifi").then(res=>res.json()).then(data=>{const list=document.getElementById("wifiList");list.innerHTML="";data.sort((a,b)=>b.rssi-a.rssi);data.forEach(net=>{const li=document.createElement("div");li.className="wifi-item";li.innerHTML=`<span>${net.ssid}</span><span>${net.rssi} dBm</span>`;li.onclick=()=>{document.getElementById("ssid").value=net.ssid};list.appendChild(li)})}).catch(err=>{console.error(err);list.innerHTML="Lỗi khi quét mạng."})}document.addEventListener("DOMContentLoaded",scanWifi);</script></body></html>
+<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>cPod Ultra - Cài đặt Wi-Fi</title><style>:root{--primary-color:#0A84FF;--background-color:#000000;--card-color:rgba(28, 28, 30, 0.7);--text-color:#ffffff;--text-secondary-color:#8e8e93;--border-radius:20px}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background-color:var(--background-color);color:var(--text-color);margin:0;padding:40px}.container{width:100%;max-width:600px;margin:auto}h1{color:var(--text-color);text-align:center;font-weight:600;margin-bottom:30px}.card{background-color:var(--card-color);backdrop-filter:blur(20px);padding:20px;border-radius:var(--border-radius);margin-bottom:20px}.button,a.button{background-color:#333;color:var(--text-color);padding:15px;border:none;border-radius:15px;font-size:1em;font-weight:500;cursor:pointer;transition:all .2s ease;text-align:center;text-decoration:none;display:block;margin-top:20px}.button-primary{background:linear-gradient(135deg,var(--primary-color),#5856D6);color:white}input{width:100%;padding:15px;box-sizing:border-box;border-radius:15px;border:none;background-color:#333;color:var(--text-color);font-size:1em;margin-bottom:15px}label{color:var(--text-secondary-color);margin-bottom:5px;display:block;margin-left:10px}.wifi-list{list-style:none;padding:0;max-height:200px;overflow-y:auto}.wifi-item{padding:15px;border-radius:15px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;background-color:#333}.wifi-item:hover{background-color:#444}</style></head><body><div class="container"><h1>Cài đặt Wi-Fi</h1><div class="card"><h2>Mạng khả dụng</h2><div id="wifiList" class="wifi-list"><div style="text-align:center;color:var(--text-secondary-color)">Đang quét...</div></div></div><div class="card"><h2>Kết nối mạng mới</h2><form action="/save_wifi" method="POST"><label for="ssid">Tên Wi-Fi (SSID)</label><input type="text" id="ssid" name="ssid" required><label for="password">Mật khẩu</label><input type="password" id="password" name="password"><button type="submit" class="button button-primary">Kết nối</button></form></div><a href="/settings" class="button">Quay lại</a></div><s`+`cript>function scanWifi(){fetch("/scan_wifi").then(res=>res.json()).then(data=>{const list=document.getElementById("wifiList");list.innerHTML="";data.sort((a,b)=>b.rssi-a.rssi);data.forEach(net=>{const li=document.createElement("div");li.className="wifi-item";li.innerHTML=`<span>${net.ssid}</span><span>${net.rssi} dBm</span>`;li.onclick=()=>{document.getElementById("ssid").value=net.ssid};list.appendChild(li)})}).catch(err=>{console.error(err);list.innerHTML="Lỗi khi quét mạng."})}document.addEventListener("DOMContentLoaded",scanWifi);</s`+`cript></body></html>
 )rawliteral";
 const char hotspot_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>cPod Ultra - Phát mạng</title><style>:root{--primary-color:#0A84FF;--background-color:#000000;--card-color:rgba(28, 28, 30, 0.7);--text-color:#ffffff;--text-secondary-color:#8e8e93;--border-radius:20px}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background-color:var(--background-color);color:var(--text-color);margin:0;padding:40px}.container{width:100%;max-width:600px;margin:auto}h1{color:var(--text-color);text-align:center;font-weight:600;margin-bottom:30px}.card{background-color:var(--card-color);backdrop-filter:blur(20px);padding:20px;border-radius:var(--border-radius);margin-bottom:20px}.button,a.button{background-color:#333;color:var(--text-color);padding:15px;border:none;border-radius:15px;font-size:1em;font-weight:500;cursor:pointer;transition:all .2s ease;text-align:center;text-decoration:none;display:block;margin-top:20px}.button-primary{background:linear-gradient(135deg,var(--primary-color),#5856D6);color:white}input{width:100%;padding:15px;box-sizing:border-box;border-radius:15px;border:none;background-color:#333;color:var(--text-color);font-size:1em;margin-bottom:15px}label{color:var(--text-secondary-color);margin-bottom:5px;display:block;margin-left:10px}.form-group{display:flex;justify-content:space-between;align-items:center;padding:10px 0}.switch{position:relative;display:inline-block;width:51px;height:31px}.switch input{opacity:0;width:0;height:0}.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#333;transition:.4s;border-radius:31px}.slider:before{position:absolute;content:"";height:27px;width:27px;left:2px;bottom:2px;background-color:white;transition:.4s;border-radius:50%}input:checked+.slider{background-color:var(--primary-color)}input:checked+.slider:before{transform:translateX(20px)}</style></head><body><div class="container"><h1>Phát mạng (Hotspot)</h1><div class="card"><form action="/save_hotspot" method="POST"><div class="form-group"><span>Bật chế độ phát mạng</span><label class="switch"><input type="checkbox" name="ap_enabled" {AP_CHECKED}><span class="slider"></span></label></div><label>Tên mạng (SSID)</label><input type="text" value="{DEVICE_NAME}" disabled><label for="ap_password">Mật khẩu (ít nhất 8 ký tự)</label><input type="password" id="ap_password" name="ap_password" value="{AP_PASSWORD}"><button type="submit" class="button button-primary">Lưu & Khởi động lại</button></form></div><a href="/settings" class="button">Quay lại</a></div></body></html>
 )rawliteral";
-
 // --- Prototypes ---
 void handleRoot(); void handleNotFound(); void handleStatus();
 void handleSetText(); void loadSettings(); void saveSettings();
@@ -587,7 +557,6 @@ void loop_space_defender(); void setup_space_defender(); void drawSpaceDefenderS
 void handleStartSpace(); void handleSpaceLeft(); void handleSpaceRight(); void handleSpaceShoot();
 void drawScreenByIndex(int index, int x_offset); void drawScreenWithAnimation(int oldScreen, int newScreen, int offset);
 void playSong(int songIndex);
-
 // ===============================================================
 // HÀM SETUP()
 // ===============================================================
@@ -596,7 +565,7 @@ void setup() {
   SPIFFS.begin();
   pinMode(LED_BUILTIN, OUTPUT); digitalWrite(LED_BUILTIN, HIGH);
   pinMode(buzzerPin, OUTPUT); randomSeed(analogRead(A0));
-
+  Wire.begin(D2, D1); // SDA là D2 (GPIO 4), SCL là D1 (GPIO 5)
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println(F("SSD1306 allocation failed")); for(;;);
   }
@@ -606,10 +575,8 @@ void setup() {
   display.setCursor(10, 30);
   display.print("Booting cPod Ultra..."); 
   display.display();
-
   loadSettings();
   for(int i=0; i<SCREEN_WIDTH; i++) heap_history[i] = 0;
-
   WiFi.mode(WIFI_AP_STA);
   IPAddress apIP(192, 168, 4, 1);
   WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
@@ -626,20 +593,16 @@ void setup() {
     WiFiManager wifiManager;
     wifiManager.startConfigPortal("cPodUltra_Setup");
   }
-
   ip_addr_t dnsserver;
   dnsserver.addr = WiFi.dnsIP(0).v4();
   dns_setserver(0, &dnsserver);
   ip_napt_enable(apIP.v4(), 1);
-
   display.setFont(); display.setTextSize(2);
   display.clearDisplay();
   display.setCursor(10, 20); display.println("Connected!");
   display.display(); delay(1500);
-
   timeClient.begin();
   setup_ota();
-
   server.on("/", HTTP_GET, handleRoot);
   server.on("/status", HTTP_GET, handleStatus);
   server.on("/next-screen", HTTP_GET, handleNextScreen);
@@ -658,7 +621,6 @@ void setup() {
   server.on("/space_left", HTTP_GET, handleSpaceLeft);
   server.on("/space_right", HTTP_GET, handleSpaceRight);
   server.on("/space_shoot", HTTP_GET, handleSpaceShoot);
-
   server.on("/settings", HTTP_GET, handleSettingsPage);
   server.on("/about", HTTP_GET, handleAboutPage);
   server.on("/save_about", HTTP_POST, handleSaveAbout);
@@ -667,7 +629,6 @@ void setup() {
   server.on("/save_wifi", HTTP_POST, handleSaveWifi);
   server.on("/hotspot", HTTP_GET, handleHotspotPage);
   server.on("/save_hotspot", HTTP_POST, handleSaveHotspot);
-
   server.on("/events", HTTP_GET, handleEventsPage);
   server.on("/add_event", HTTP_GET, handleAddEventPage);
   server.on("/save_event", HTTP_POST, handleSaveEvent);
@@ -676,11 +637,9 @@ void setup() {
   server.on("/calendar", HTTP_GET, handleCalendarPage);
   
   server.onNotFound(handleProxy);
-
   server.begin();
   Serial.println("HTTP server started");
 }
-
 // ===============================================================
 // HÀM LOOP() CHÍNH
 // ===============================================================
@@ -689,7 +648,6 @@ void loop() {
   server.handleClient();
   timeClient.update();
   ArduinoOTA.handle();
-
   if (settings.activationDate == 0 && timeClient.isTimeSet()) {
     settings.activationDate = timeClient.getEpochTime();
     saveSettings();
@@ -698,14 +656,12 @@ void loop() {
   if(isPlayingMusic) {
     playNextNote();
   }
-
   switch (currentApp) {
     case APP_MAIN_ROTATION: loop_main(); break;
     case APP_SNAKE_GAME: loop_snake_game(); break;
     case APP_SPACE_DEFENDER: loop_space_defender(); break;
   }
 }
-
 // ===============================================================
 // --- VÒNG LẶP CHO CHẾ ĐỘ CHÍNH ---
 // ===============================================================
@@ -714,14 +670,12 @@ void loop_main() {
   static unsigned long lastScreenChange = 0;
   static int targetScreen = 0;
   static int slideOffset = 0;
-
   static unsigned long lastHeapUpdate = 0;
   if(millis() - lastHeapUpdate > 1000){
     lastHeapUpdate = millis();
     heap_history[heap_history_index] = ESP.getFreeHeap();
     heap_history_index = (heap_history_index + 1) % SCREEN_WIDTH;
   }
-
   if (isDisplayingTextOverride) {
     drawTextScreen();
     if (millis() - textOverrideStartTime > textOverrideDuration) {
@@ -742,7 +696,6 @@ void loop_main() {
             lastDrawnScreen = -1;
         }
     }
-
     if (currentScreen != lastDrawnScreen || slideOffset > 0) {
       drawScreenWithAnimation(currentScreen, targetScreen, slideOffset);
       if(slideOffset == 0) lastDrawnScreen = currentScreen;
@@ -758,11 +711,9 @@ void loop_main() {
     }
   }
 }
-
 // ===============================================================
 // --- LOGIC VÀ CÁC HÀM KHÁC ---
 // ===============================================================
-
 // --- Logic & Vòng lặp cho Games ---
 void setup_snake_game() {
   snake.clear();
@@ -773,7 +724,6 @@ void setup_snake_game() {
   snake_score = 0;
   snakeGameOver = false;
 }
-
 void loop_snake_game() {
   static unsigned long lastMove = 0;
   
@@ -782,7 +732,6 @@ void loop_snake_game() {
       currentApp = APP_MAIN_ROTATION;
       return;
   }
-
   if (millis() - lastMove > 200) {
     lastMove = millis();
     std::pair<int, int> next_head = snake[0];
@@ -792,7 +741,6 @@ void loop_snake_game() {
       case LEFT: next_head.first -= 4; break;
       case RIGHT: next_head.first += 4; break;
     }
-
     if (next_head.first < 0 || next_head.first >= SCREEN_WIDTH || next_head.second < 0 || next_head.second >= SCREEN_HEIGHT) {
       snakeGameOver = true;
     }
@@ -803,7 +751,6 @@ void loop_snake_game() {
     }
     
     snake.insert(snake.begin(), next_head);
-
     if (next_head.first == food.first && next_head.second == food.second) {
       snake_score++;
       food.first = (int)random(SCREEN_WIDTH/4)*4;
@@ -811,7 +758,6 @@ void loop_snake_game() {
     } else {
       snake.pop_back();
     }
-
     if (snakeGameOver) {
       if (snake_score > settings.snake_highscore) {
         settings.snake_highscore = snake_score;
@@ -821,7 +767,6 @@ void loop_snake_game() {
     drawSnakeGameScreen();
   }
 }
-
 void setup_space_defender() {
   playerX = 60;
   bullets.clear();
@@ -832,7 +777,6 @@ void setup_space_defender() {
   space_score = 0;
   spaceGameOver = false;
 }
-
 void loop_space_defender() {
     static unsigned long lastUpdate = 0;
     if (spaceGameOver) {
@@ -840,20 +784,16 @@ void loop_space_defender() {
         currentApp = APP_MAIN_ROTATION;
         return;
     }
-
     if (millis() - lastUpdate > 100) { // Tốc độ game
         lastUpdate = millis();
-
         for (auto& b : bullets) {
             if (b.active) b.y -= 4;
             if (b.y < 0) b.active = false;
         }
-
         for (auto& a : aliens) {
             if (a.active) {
                 a.y++;
                 if (a.y > SCREEN_HEIGHT) a.active = false;
-
                 for (auto& b : bullets) {
                     if (b.active && b.x > a.x && b.x < a.x + 8 && b.y > a.y && b.y < a.y + 8) {
                         a.active = false;
@@ -875,7 +815,6 @@ void loop_space_defender() {
                 aliens[i] = {(int)random(20, 100), (int)random(5, 20), true};
             }
         }
-
         if(spaceGameOver) {
             if (space_score > settings.space_highscore) {
                 settings.space_highscore = space_score;
@@ -886,13 +825,11 @@ void loop_space_defender() {
         drawSpaceDefenderScreen();
     }
 }
-
 void drawTopBar(int x_offset) {
   display.setFont((const GFXfont *)&TomThumb);
   display.setCursor(x_offset + 95, 8);
   display.print(timeClient.getFormattedTime().substring(0, 5));
 }
-
 void drawQRCodeCentered(const char* text, int x_offset) {
   QRCode qrcode;
   uint8_t qrcodeData[qrcode_getBufferSize(3)];
@@ -909,7 +846,6 @@ void drawQRCodeCentered(const char* text, int x_offset) {
     }
   }
 }
-
 void drawScreenByIndex(int index, int x_offset) {
     switch (index) {
         case 0: drawTimeScreen(x_offset); break;
@@ -925,7 +861,6 @@ void drawScreenByIndex(int index, int x_offset) {
         case 10: drawMusicVisualizerScreen(x_offset); break;
     }
 }
-
 void drawScreenWithAnimation(int oldScreen, int newScreen, int offset) {
     display.clearDisplay();
     if (oldScreen == 1) { // Special case for typing animation
@@ -939,7 +874,6 @@ void drawScreenWithAnimation(int oldScreen, int newScreen, int offset) {
     }
     display.display();
 }
-
 void drawSnakeGameScreen() {
   display.clearDisplay();
   for (const auto& segment : snake) {
@@ -955,13 +889,11 @@ void drawSnakeGameScreen() {
   }
   display.display();
 }
-
 void drawSpaceDefenderScreen() {
     display.clearDisplay();
     display.drawTriangle(playerX, 58, playerX - 5, 63, playerX + 5, 63, WHITE); 
     for (const auto& b : bullets) if (b.active) display.fillRect(b.x, b.y, 2, 4, WHITE); 
     for (const auto& a : aliens) if (a.active) display.fillRect(a.x, a.y, 8, 8, WHITE);
-
     if (spaceGameOver) {
         display.setFont();
         display.setTextSize(2);
@@ -970,7 +902,6 @@ void drawSpaceDefenderScreen() {
     }
     display.display();
 }
-
 void drawTypingCpodScreen() { 
     display.clearDisplay(); display.setTextColor(WHITE);
     drawTopBar(0);
@@ -986,8 +917,6 @@ void drawTypingCpodScreen() {
     }
     delay(300);
 }
-
-
 void drawTimeScreen(int x_offset) { 
   display.setFont();
   display.setTextSize(3); display.setCursor(x_offset + 18, 10);
@@ -1001,7 +930,6 @@ void drawTimeScreen(int x_offset) {
   sprintf(date_str, "%s, %02d/%02d/%d", days[timeClient.getDay()], ptm->tm_mday, ptm->tm_mon + 1, ptm->tm_year + 1900);
   display.setCursor(x_offset + 25, 55); display.println(date_str);
 }
-
 void drawQRScreen(int x_offset) {
   if (WiFi.status() == WL_CONNECTED) { 
     drawQRCodeCentered(("http://" + WiFi.localIP().toString()).c_str(), x_offset);
@@ -1009,7 +937,6 @@ void drawQRScreen(int x_offset) {
     drawQRCodeCentered(("http://" + WiFi.softAPIP().toString()).c_str(), x_offset);
   }
 }
-
 void drawInfoScreen(int x_offset) {
   display.setFont(); display.setTextSize(1);
   display.setCursor(x_offset, 0);
@@ -1025,12 +952,10 @@ void drawInfoScreen(int x_offset) {
   display.setCursor(x_offset, 62);
   display.print("UPTIME: "); display.print(formatUptime());
 }
-
 void drawCountdownScreen(int x_offset) {
     int nextEventIndex = -1;
     uint32_t soonestTimestamp = 0xFFFFFFFF;
     uint32_t now = timeClient.getEpochTime();
-
     for (int i = 0; i < settings.eventCount; i++) {
         if (settings.events[i].timestamp > now) {
             if (settings.events[i].timestamp < soonestTimestamp) {
@@ -1042,7 +967,6 @@ void drawCountdownScreen(int x_offset) {
     
     display.setFont((const GFXfont *)&TomThumb);
     display.setCursor(x_offset, 8);
-
     if (nextEventIndex == -1) {
         display.print("NO UPCOMING EVENTS");
     } else {
@@ -1054,7 +978,6 @@ void drawCountdownScreen(int x_offset) {
         int days = remainingSeconds / 86400; remainingSeconds %= 86400;
         int hours = remainingSeconds / 3600; remainingSeconds %= 3600;
         int minutes = remainingSeconds / 60; int seconds = remainingSeconds % 60;
-
         char buf[20];
         sprintf(buf, "%dD %02d:%02d:%02d", days, hours, minutes, seconds);
         
@@ -1063,7 +986,6 @@ void drawCountdownScreen(int x_offset) {
         display.println(buf);
     }
 }
-
 void drawSignatureScreen(int x_offset) {
     drawTopBar(x_offset);
     display.setFont(); display.setTextSize(2);
@@ -1074,7 +996,6 @@ void drawSignatureScreen(int x_offset) {
     display.setCursor(x_offset + (SCREEN_WIDTH - w) / 2, y_pos);
     display.println(text);
 }
-
 void drawTextScreen() {
     display.clearDisplay(); display.setTextColor(WHITE);
     int16_t x1, y1; uint16_t w, h;
@@ -1094,7 +1015,6 @@ void drawTextScreen() {
     }
     display.display();
 }
-
 void drawScrollingTextScreen(int x_offset) { 
   display.setFont(); display.setTextSize(2); 
   int16_t x1, y1; uint16_t w, h; 
@@ -1104,7 +1024,6 @@ void drawScrollingTextScreen(int x_offset) {
   scroll_x_position -= 2; 
   if (scroll_x_position < -w) { scroll_x_position = SCREEN_WIDTH; } 
 }
-
 void drawMatrixScreen(int x_offset) { 
   display.setFont(); display.setTextSize(1);
   for (int i = 0; i < 20; i++) { 
@@ -1115,7 +1034,6 @@ void drawMatrixScreen(int x_offset) {
     else display.fillRect(x_offset + x, y, 6, 8, BLACK);
   }
 }
-
 void drawHeapGraphScreen(int x_offset) {
   display.setFont((const GFXfont *)&TomThumb);
   display.setCursor(x_offset, 8); display.print("REALTIME HEAP MONITOR"); 
@@ -1130,7 +1048,6 @@ void drawHeapGraphScreen(int x_offset) {
     display.drawLine(x_offset + i, y1, x_offset + i+1, y2, WHITE);
   }
 }
-
 void drawBorderMarqueeScreen(int x_offset) {
     display.setFont((const GFXfont *)&TomThumb);
     display.setCursor(x_offset + marquee_x, marquee_y);
@@ -1144,7 +1061,6 @@ void drawBorderMarqueeScreen(int x_offset) {
     }
     marquee_char_index = (marquee_char_index + 1) % marqueeText.length();
 }
-
 void drawMusicVisualizerScreen(int x_offset) {
     for(int i=0; i < 16; i++){
         int barHeight = (currentNoteForVisualizer > 0) ? random(5, (currentNoteForVisualizer / 20)) : random(1,3);
@@ -1152,7 +1068,6 @@ void drawMusicVisualizerScreen(int x_offset) {
         display.fillRect(x_offset + i * 8, SCREEN_HEIGHT - barHeight, 6, barHeight, WHITE);
     }
 }
-
 // --- Các hàm xử lý web (Handlers) ---
 void handleRoot() { server.send_P(200, "text/html", index_html); }
 void handleStartSnake() { currentApp = APP_SNAKE_GAME; setup_snake_game(); server.send(200, "text/plain", "OK"); }
@@ -1195,8 +1110,6 @@ void handleSetText() { if (server.hasArg("text")) { oledText = server.arg("text"
 void handleNextSong() { currentSongIndex = (currentSongIndex + 1) % songCount; playSong(currentSongIndex); server.send(200, "text/plain", "OK"); }
 void handlePrevSong() { currentSongIndex--; if(currentSongIndex < 0) currentSongIndex = songCount - 1; playSong(currentSongIndex); server.send(200, "text/plain", "OK"); }
 void handleNotFound() { server.send(404, "text/plain", "Not Found"); }
-
-
 // ===============================================================
 // --- CÁC HÀM TIỆN ÍCH KHÁC ---
 // ===============================================================
@@ -1252,20 +1165,16 @@ void saveSettings() {
     serializeJson(doc, configFile);
     configFile.close();
 }
-
 String formatUptime() { unsigned long t = millis() / 1000; int d = t / 86400; t %= 86400; int h = t / 3600; t %= 3600; int m = t / 60; int s = t % 60; return String(d) + "d " + h + "h " + m + "m " + s + "s"; }
-
 void playSong(int songIndex) {
     if(songIndex < 0 || songIndex >= songCount) return;
     currentSongIndex = songIndex;
     current_note_index = 0;
     isPlayingMusic = true;
 }
-
 void playNextNote() {
     const Song& currentSong = songbook[currentSongIndex];
     int noteDuration = 1000 / (currentSong.tempo[current_note_index] * 2);
-
     if (millis() - note_start_time > noteDuration) {
         noTone(buzzerPin);
         
@@ -1275,7 +1184,6 @@ void playNextNote() {
             currentNoteForVisualizer = 0;
             return;
         }
-
         int note = currentSong.melody[current_note_index];
         if (note != REST) {
             tone(buzzerPin, note, noteDuration * 0.9);
@@ -1284,10 +1192,8 @@ void playNextNote() {
         note_start_time = millis();
     }
 }
-
 void handleNextScreen() { currentScreen = (currentScreen + 1) % 11; server.send(200, "text/plain", "OK"); }
 void handleToggleRotation() { rotationPaused = !rotationPaused; server.send(200, "text/plain", "OK"); }
-
 // ===============================================================
 // --- CÀI ĐẶT OTA ---
 // ===============================================================
@@ -1300,11 +1206,6 @@ void setup_ota() {
   ArduinoOTA.begin();
 }
     </script>
-    <!-- =================================================================== -->
-    <!-- KẾT THÚC KHU VỰC AN TOÀN                                           -->
-    <!-- =================================================================== -->
-
-
     <div class="screen" id="main-screen">
         <div class="container">
             <h1>cOS Ultra</h1>
@@ -1316,19 +1217,15 @@ void setup_ota() {
                     <option value="cOS Ultra 1.0">cOS Ultra 1.0</option>
                 </select>
             </div>
-
             <button class="btn" id="start-btn" disabled>Bắt đầu</button>
         </div>
     </div>
     
     <div class="screen is-hiding hidden" id="intro-screen">
         <h2>cOS Ultra 1.0</h2>
-        <ul class="features-list" id="features-list">
-             <!-- Features will be injected by JS -->
-        </ul>
+        <ul class="features-list" id="features-list"></ul>
         <button class="btn" id="continue-btn">Chuẩn bị nạp</button>
     </div>
-
     <div class="screen is-hiding hidden" id="update-screen">
         <h2>Đang cài đặt cOS Ultra</h2>
         <p>Quá trình sẽ mất vài phút. Vui lòng không ngắt kết nối.</p>
@@ -1337,7 +1234,6 @@ void setup_ota() {
         </div>
         <p class="status-text" id="status-text">Đang khởi tạo...</p>
     </div>
-
     <div class="screen is-hiding hidden" id="success-screen">
         <svg id="success-svg" viewBox="0 0 130.2 130.2">
             <circle class="path circle" fill="none" stroke="#FFF" stroke-width="6" stroke-miterlimit="10" cx="65.1" cy="65.1" r="62.1"/>
@@ -1345,7 +1241,6 @@ void setup_ota() {
         </svg>
         <h2 class="final-message" id="final-message"></h2>
     </div>
-
     <script>
         const osVersionSelect = document.getElementById('os-version');
         const startBtn = document.getElementById('start-btn');
@@ -1354,15 +1249,12 @@ void setup_ota() {
         const introScreen = document.getElementById('intro-screen');
         const updateScreen = document.getElementById('update-screen');
         const successScreen = document.getElementById('success-screen');
-
         const featuresList = document.getElementById('features-list');
         const continueBtn = document.getElementById('continue-btn');
         
         const progressBar = document.getElementById('progress-bar');
         const statusText = document.getElementById('status-text');
-
         const finalMessage = document.getElementById('final-message');
-
         function switchScreen(fromScreen, toScreen) {
             fromScreen.classList.add('is-hiding');
             
@@ -1372,21 +1264,17 @@ void setup_ota() {
                 setTimeout(() => toScreen.classList.remove('is-hiding'), 50);
             }, 800);
         }
-
         osVersionSelect.addEventListener('change', () => {
             startBtn.disabled = osVersionSelect.value !== 'cOS Ultra 1.0';
         });
-
         startBtn.addEventListener('click', () => {
             switchScreen(mainScreen, introScreen);
             showIntro();
         });
-
         continueBtn.addEventListener('click', () => {
             switchScreen(introScreen, updateScreen);
             startUpdate();
         });
-
         function showIntro() {
             const features = [
                 "Kernel Mạng kép với NAT Routing.",
@@ -1404,7 +1292,6 @@ void setup_ota() {
                 li.textContent = `> ${featureText}`;
                 li.style.animationDelay = `${index * 0.4}s`;
                 featuresList.appendChild(li);
-
                 // Trigger animation
                 setTimeout(() => li.classList.add('is-visible'), 100);
             });
@@ -1414,31 +1301,26 @@ void setup_ota() {
                 continueBtn.classList.add('is-visible');
             }, features.length * 400);
         }
-
         async function startUpdate() {
             // Lấy mã nạp từ khu vực an toàn
             const firmwareCode = document.getElementById('firmware-data').textContent;
-
             if (firmwareCode.trim().length < 100) { // Kiểm tra xem người dùng đã dán code chưa
                 alert("Lỗi: Chưa có mã nạp (firmware) trong file HTML. Vui lòng dán code .ino của bạn vào khu vực được chỉ định.");
                 // Chuyển về màn hình chính
                 switchScreen(updateScreen, mainScreen);
                 return;
             }
-
             if (!('serial' in navigator)) {
                 statusText.textContent = "Lỗi: Trình duyệt không hỗ trợ Web Serial API.";
                 alert("Trình duyệt của bạn không hỗ trợ Web Serial API. Vui lòng sử dụng Google Chrome hoặc Microsoft Edge phiên bản mới nhất.");
                 return;
             }
-
             try {
                 statusText.textContent = "Vui lòng chọn cổng COM của cPod...";
                 const port = await navigator.serial.requestPort();
                 
                 statusText.textContent = "Đang thiết lập kết nối an toàn...";
                 await port.open({ baudRate: 115200 });
-
                 const updateSteps = [
                     { progress: 10, text: "Đã kết nối. Đang gửi yêu cầu nạp..." },
                     { progress: 25, text: "Đang truyền Kernel hệ thống..." },
@@ -1447,7 +1329,6 @@ void setup_ota() {
                     { progress: 90, text: "Xác thực và kiểm tra tính toàn vẹn..." },
                     { progress: 95, text: "Hoàn tất. Đang chờ thiết bị khởi động lại..." },
                 ];
-
                 for (const step of updateSteps) {
                     await new Promise(resolve => setTimeout(resolve, 1200));
                     progressBar.style.width = `${step.progress}%`;
@@ -1464,18 +1345,15 @@ void setup_ota() {
                 
                 progressBar.style.width = '100%';
                 statusText.textContent = "Cài đặt thành công!";
-
                 setTimeout(() => switchScreen(updateScreen, successScreen), 1000);
                 setTimeout(() => {
                     finalMessage.textContent = "Xin chào cPoder!";
                 }, 1500);
-
             } catch (err) {
                 statusText.textContent = `Lỗi: ${err.message}`;
                 progressBar.style.backgroundColor = '#FF453A';
             }
         }
-
     </script>
 </body>
 </html>
