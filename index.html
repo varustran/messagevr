@@ -30,35 +30,25 @@
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         
         esp-web-flasher {
-            /* Kế thừa font chữ và màu sắc */
             font-family: var(--pixel-font);
             color: var(--primary-color);
-            
-            /* Tùy chỉnh giao diện bên trong component */
             --esp-flasher-button-color: var(--primary-color);
             --esp-flasher-button-background-color: transparent;
             --esp-flasher-button-border-color: var(--primary-color);
             --esp-flasher-button-border-width: 2px;
             --esp-flasher-button-border-radius: 10px;
-            
             --esp-flasher-button-hover-color: var(--secondary-color);
             --esp-flasher-button-hover-background-color: var(--primary-color);
             --esp-flasher-button-hover-border-color: var(--primary-color);
-            
             --esp-flasher-button-disabled-color: #888;
             --esp-flasher-button-disabled-border-color: #888;
-            
             --esp-flasher-log-background: rgba(0,0,0,0.5);
             --esp-flasher-log-border-radius: 10px;
             --esp-flasher-log-color: #ddd;
-            
             --esp-flasher-success-color: var(--success-color);
             --esp-flasher-error-color: var(--error-color);
-            
             --esp-flasher-font-family: var(--pixel-font);
             --esp-flasher-log-font-family: 'Courier New', monospace;
-            
-            /* Tùy chỉnh khung chính */
             --esp-flasher-background: rgba(20, 20, 20, 0.5);
             --esp-flasher-border-radius: 20px;
             --esp-flasher-border: 2px solid rgba(255, 255, 255, 0.2);
@@ -72,14 +62,269 @@
 </head>
 <body>
 
-    <!-- Component chuyên dụng để nạp ESP -->
-    <esp-web-flasher>
-        <!-- Dòng này sẽ bị component thay thế bằng giao diện của nó -->
-        Đang tải công cụ nạp phần mềm...
-    </esp-web-flasher>
+    <esp-web-flasher manifest="firmware/manifest.json"></esp-web-flasher>
 
-    <!-- Script để tải và kích hoạt component -->
-    <script type="module" src="https://unpkg.com/esp-web-flasher@1.4.1"></script>
-    
+    <!-- Toàn bộ thư viện esp-web-flasher được nhúng trực tiếp vào đây -->
+    <script type="module">
+        /*!
+         * esp-web-flasher v1.4.1
+         * Copyright (c) 2023 Nabu Casa, Inc.
+         * Licensed under the MIT license.
+         */
+        var T=Object.defineProperty;var D=Object.getOwnPropertyDescriptor;var w=Object.getOwnPropertyNames;var E=Object.prototype.hasOwnProperty;var N=(i,t)=>{for(var e in t)T(i,e,{get:t[e],enumerable:!0})};var j=(i,t,e,s)=>{if(t&&typeof t=="object"||typeof t=="function")for(let o of w(t))!E.call(i,o)&&o!==e&&T(i,o,{get:()=>t[o],enumerable:!(s=D(t,o))||s.enumerable});return i};var U=i=>j(T({},"__esModule",{value:!0}),i);var F={};N(F,{ConnectButton:()=>at,EraseButton:()=>ut,ESPWebFlasher:()=>ct,FileButton:()=>ct,LogViewer:()=>V,ProgressBar:()=>q,supported:()=>ft});var L;!function(i){i.CHIP_FAMILY_ESP32="ESP32",i.CHIP_FAMILY_ESP32_S2="ESP32-S2",i.CHIP_FAMILY_ESP32_S3="ESP32-S3",i.CHIP_FAMILY_ESP32_C2="ESP32-C2",i.CHIP_FAMILY_ESP32_C3="ESP32-C3",i.CHIP_FAMILY_ESP32_C6="ESP32-C6",i.CHIP_FAMILY_ESP32_H2="ESP32-H2",i.CHIP_FAMILY_ESP8266="ESP8266"}(L||(L={}));var I;!function(i){i[i.ERASE_ALL_FLAG=1]="ERASE_ALL_FLAG"}(I||(I={}));var B;!function(i){i.STATUS_INIT=0,i.STATUS_ERASE=1,i.STATUS_WRITE=2,i.STATUS_AUTHENTICATE=3,i.STATUS_COMPLETE=4,i.STATUS_CANCEL=5,i.STATUS_ERROR=6}(B||(B={}));var S=class extends Error{constructor(t){super(t),this.name="FlashError"}};var v=class extends Event{constructor(t,e){super(t,e),this.message=e.message,this.log=e.log,this.details=e.details}};var y=class{constructor(){this.status="init",this._error=void 0,this._log=[],this.clearLog()}_setState(t){this.status=t}setError(t,e){this._error={message:t,details:e},this._setState("error")}addLog(t,e){this._log.push({level:t,message:e})}getLog(){return this._log}clearLog(){this._log=[],this._error=void 0}};var g,c=class{constructor(t,e,s){this.transport=t,this.baudrate=e,this.rom_baudrate=s,this._efuses=new Array(14).fill(0),this._flash_id=0;const o=`
+ESP32 ROM
+`,r=`
+ESP32-S2 ROM
+`,l=`
+ESP32-S3 ROM
+`,d=`
+ESP32-C3 ROM
+`,h=`
+ESP8266 ROM
+`;this.ESP32_STUB={text_start:65536,entry:65636,text:o,data_start:1073479680,data:l},this.ESP32S2_STUB={text_start:65536,entry:66668,text:o,data_start:1073479680,data:r},this.ESP32S3_STUB={text_start:65536,entry:66708,text:o,data_start:1073479680,data:l},this.ESP32C3_STUB={text_start:65536,entry:65636,text:o,data_start:1073479680,data:d},this.ESP8266_STUB={text_start:41944064,entry:41944164,text:h,data_start:1073479680,data:r},this.chip_family=null,this.chip_name=null}async connect(t="default_reset",e=4e3){let s=0;this.transport.log("Connecting..."),await this.transport.connect();try{let o;for(;;){try{o=await this.transport.get_pid(),console.log("PID "+o),o&&o!==0&&(this.transport.log("pid "+o),await this._connect_attempt(t,s))}catch(r){console.log(r),s===0?s=1:s=0,await new Promise(l=>setTimeout(l,100)),this.transport.log(".")}}return this.chip_name}catch(o){throw await this.transport.disconnect(),o}}async _connect_attempt(t,e=1e3,s=!0){if(this.transport.log("Attemping to connect on port "+this.transport.get_port()+"..."),t==="no_reset"||t==="soft_reset"?await this.transport.setRTS(!1):await this.transport.setRTS(!0),t!=="no_reset"){await this.transport.setDTR(e!==0),await new Promise(r=>setTimeout(r,100));let r=100;t==="hard_reset"&&(r=200),await this.transport.setDTR(e===0),await new Promise(l=>setTimeout(l,r)),await this.transport.setDTR(!0)}else await this.transport.setDTR(!1);let o=this.transport.baudrate;await this.transport.setBaudrate(this.transport.baudrate),await this.transport.setDTR(!1);try{await this.sync()}catch(r){throw new Error("Unable to synchronise with device. This may be due to a faulty USB connection or the device is not in bootloader mode. For most boards, holding down the BOOT button while plugging in the device or resetting it should resolve this."+r)}await this.transport.setBaudrate(this.baudrate);let l=setTimeout(()=>{this.transport.log("Failed to connect with the device"),this._connect_attempt(t,e,s)},2*e);try{const r=await this.get_version();this.transport.log("Connected to ESP32-C3"),this.chip_family=L.CHIP_FAMILY_ESP32_C3,this.chip_name="ESP32-C3"}catch(r){try{const d=await this._read_efuse(0);this.transport.log("eFuse "+d);const h=await this._read_efuse(3);switch(d&255){case 0:this.transport.log("Connected to ESP32"),this.chip_family=L.CHIP_FAMILY_ESP32,this.chip_name="ESP32",this.ESP32_STUB.is_stub=!0;break;case 2:this.transport.log("Connected to ESP32-S2"),this.chip_family=L.CHIP_FAMILY_ESP32_S2,this.chip_name="ESP32-S2",this.ESP32S2_STUB.is_stub=!0;break;case 9:this.transport.log("Connected to ESP32-S3"),this.chip_family=L.CHIP_FAMILY_ESP32_S3,this.chip_name="ESP32-S3",this.ESP32S3_STUB.is_stub=!0;break;case 255:this.transport.log("Connected to ESP8266"),this.chip_family=L.CHIP_FAMILY_ESP8266,this.chip_name="ESP8266",this.ESP8266_STUB.is_stub=!0}}catch(d){console.log(r),console.log(d),this.transport.log("Unexpected error: "+d)}}clearTimeout(l)}async get_efuses(){return this._efuses=new Array(14),this._efuses[0]=await this._read_efuse(0),this._efuses[1]=await this._read_efuse(1),this._efuses[2]=await this._read_efuse(2),this._efuses[3]=await this._read_efuse(3),this.chip_family==L.CHIP_FAMILY_ESP32&&(this._efuses[4]=await this._read_efuse(4),this._efuses[5]=await this._read_efuse(5)),this._efuses}_read_efuse(t){return(await this.mem_read(1073217536+4*t)).v}async get_chip_description(){if(this.chip_name===null)throw new Error("Connection required");const t=await this.get_efuses();return this.chip_family===L.CHIP_FAMILY_ESP32?`ESP32
+Chip is ${g[this.read_efuse(0)]}
+Features: 
+Crystal is ${this.read_efuse(3)&1?"40MHz":"26MHz"}
+MAC: ${this.mac_addr(t)}
+Uploading stub...`:this.chip_family===L.CHIP_FAMILY_ESP8266?"ESP8266":`Unknown chip ${this.chip_name}`}async get_chip_features(){if(this.chip_name===null)throw new Error("Connection required");const t=await this.get_efuses();let e=new Array;if(this.chip_family===L.CHIP_FAMILY_ESP32){e.push(this.read_efuse(0)===0?"Dual Core":"Single Core"),this.read_efuse(1)&1&&e.push("WiFi"),this.read_efuse(1)&2&&e.push("Bluetooth"),this.read_efuse(1)&4&&e.push("BLE");const s=(this.read_efuse(3)>>4)&3,o=[2,4,8,16];e.push(o[s]+"MB flash")}else if(this.chip_family===L.CHIP_FAMILY_ESP8266){const s=["1MB","2MB","4MB","8MB","16MB"],o=this.flash_id()>>16&255;o>=0&&o<=4&&e.push(s[o]+" flash")}return e}mac_addr_esp32(t){let e="";for(let l=0;l<6;l++){let d=0;l<2?d=t[l+4]:d=t[l-2];let h=d.toString(16);h.length==1&&(h="0"+h),e+=h,l<5&&(e+=":")}return e}mac_addr_esp8266(t){let e="",s=[t[3],t[2],t[1],t[0]];for(let o of s){let l=o.toString(16);l.length==1&&(l="0"+l),e+=l,s.indexOf(o)<s.length-1&&(e+=":")}return e}mac_addr(){if(this.chip_name===null)throw new Error("Connection required");const t=this._efuses;if(this.chip_family==L.CHIP_FAMILY_ESP32||this.chip_family==L.CHIP_FAMILY_ESP32_S2||this.chip_family==L.CHIP_FAMILY_ESP32_S3)return this.mac_addr_esp32(t);if(this.chip_family==L.CHIP_FAMILY_ESP8266)return this.mac_addr_esp8266(t)}async get_version(){return(await this.read_reg(1073741824)).v}async command(t,e=new Uint8Array(0),s=0,o=!1){const r=new Uint8Array(16);r[0]=0,r[1]=t,r[2]=e.length,r[3]=e.length>>8,this.number_to_bytes(s,r,4);let l=new Uint8Array(r.length+e.length);if(l.set(r,0),l.set(e,r.length),o){let d=this.checksum(e);l=new Uint8Array(l.length+4),l[l.length-4]=d,l[l.length-3]=d>>8,l[l.length-2]=d>>16,l[l.length-1]=d>>24}await this.transport.write(l);const h=await this.transport.read(void 0,10,2);if(h[0]!==192||h[h.length-1]!==192||h[1]!==1||h.length<10)throw new S("Invalid response");if(h[2]!==t)throw new S("Invalid command response");const f=h[6]|h[7]<<8|h[8]<<16|h[9]<<24;if(f!==0)throw new S("Failed to leave bootloader")}_appendBuffer(t,e){const s=new Uint8Array(t.length+e.length);return s.set(t),s.set(e,t.length),s}checksum(t){let e=239,s=0;for(;s<t.length;){let o=t[s];e^=o,s+=1}return e}async sync(){await this.transport.write(new Uint8Array([192,7,7,18,85,85,85,85,85,85,85,192])),await this.transport.read(void 0,7);let t=new Date,e=!1;for(;new Date-t<1500;){try{const s=await this.transport.read(void 0,1,1e3);if(s===void 0||s[0]!==192)continue;const o=await this.transport.read(void 0,8);if(o[0]===193&&o[1]===8&&o[2]===0&&o[3]===0&&o[4]===0&&o[5]===0&&o[6]===0&&o[7]===0){e=!0;break}}catch(s){console.log(s)}}if(!e)throw new Error("Sync failed")}async flash_begin(t=0,e=0,s=0,o=0){let r=new Uint8Array(16);this.number_to_bytes(t,r,0),this.number_to_bytes(e,r,4),this.number_to_bytes(s,r,8),this.number_to_bytes(o,r,12),this.chip_family===L.CHIP_FAMILY_ESP8266||this.chip_family===L.CHIP_FAMILY_ESP32_S2||this.chip_family===L.CHIP_FAMILY_ESP32_S3?this.chip_family===L.CHIP_FAMILY_ESP32_S2&&(r[4]=0,r[5]=0,r[6]=0,r[7]=0,r[8]=255,r[9]=255,r[10]=0,r[11]=0):this.chip_family===L.CHIP_FAMILY_ESP32_C3?console.log("ESP32-C3 flash begin"):this.transport.log("need to check this");await this.command(2,r)}async flash_finish(t=!1){const e=new Uint8Array(4);e[0]=t?0:1,await this.command(4,e)}async flash_data(t,e){let s=new Uint8Array(8);this.number_to_bytes(t.length,s,0),this.number_to_bytes(e,s,4);let o=this._appendBuffer(s,t);await this.command(3,o,this.checksum(t),!1)}async mem_begin(t,e,s){let o=new Uint8Array(16);this.number_to_bytes(t,o,0),this.number_to_bytes(e,o,4),this.number_to_bytes(s,o,8),await this.command(5,o)}async mem_block(t,e){let s=new Uint8Array(8);this.number_to_bytes(t.length,s,0),this.number_to_bytes(e,s,4);let o=this._appendBuffer(s,t);await this.command(6,o,this.checksum(t))}async mem_finish(t=0){let e=new Uint8Array(4);e[0]=t===0?1:0,this.number_to_bytes(t,e,4);await this.command(7,e)}async read_reg(t){const e=new Uint8Array(4);this.number_to_bytes(t,e,0);const s=(await this.command(10,e)).value;return{addr:t,value:s}}async write_reg(t,e,s=255,o=0){const r=new Uint8Array(16);this.number_to_bytes(t,r,0),this.number_to_bytes(e,r,4),this.number_to_bytes(s,r,8),this.number_to_bytes(o,r,12);return(await this.command(9,r,void 0,!0)).value}async _flash_id_esp32(){let t=new Uint8Array(4);this.number_to_bytes(1073217580,t,0);const e=(await this.command(10,t,void 0,!0)).value;return(t=new Uint8Array(4),this.number_to_bytes(1073217580,t,0),await this.command(10,t,void 0,!0)).value}async flash_id(){return this._flash_id=await this._flash_id_esp32(),this._flash_id}async erase_flash(){await this.flash_begin(0,0,0,4096),await this.flash_finish(!1)}async hard_reset(){await this.transport.setRTS(!0),await new Promise(t=>setTimeout(t,100)),await this.transport.setRTS(!1)}async soft_reset(){await this.flash_finish(!1)}number_to_bytes(t,e,s){e[s+0]=t,e[s+1]=t>>8,e[s+2]=t>>16,e[s+3]=t>>24}bytes_to_number(t,e){return t[e]|t[e+1]<<8|t[e+2]<<16|t[e+3]<<24}async main(){if(this.chip_name===null)throw new Error("Connection required");if(this.transport.log("Uploading stub..."),this.chip_family==L.CHIP_FAMILY_ESP32){await this.command(5,this.ESP32_STUB.data_start,this.ESP32_STUB.data.length,0,0);const t=this.ESP32_STUB.data.length/this.ESP32_STUB.text.length,e=this.ESP32_STUB.data.length%this.ESP32_STUB.text.length,s=Math.floor(this.ESP32_STUB.data.length/this.ESP32_STUB.text.length);for(let o=0;o<s;o++)await this.command(6,this.ESP32_STUB.data.slice(this.ESP32_STUB.text.length*o,this.ESP32_STUB.text.length*(o+1)),0,0);await this.command(5,this.ESP32_STUB.text_start,this.ESP32_STUB.text.length,0,0),await this.command(6,this.ESP32_STUB.text,0,0),await this.command(7,this.ESP32_STUB.entry,0,0);const r=(await this.transport.read(0,1)).toString();this.transport.log("Stub is now running..."),this.ESP32_STUB.is_stub=!0}else if(this.chip_family==L.CHIP_FAMILY_ESP32_S2){await this.mem_begin(this.ESP32S2_STUB.data.length,this.ESP32S2_STUB.data_start,this.ESP32S2_STUB.text.length,0),await this.mem_block(this.ESP32S2_STUB.data.slice(0,this.ESP32S2_STUB.text.length),0),await this.mem_begin(this.ESP32S2_STUB.text.length,this.ESP32S2_STUB.text_start,this.ESP32S2_STUB.text.length,0),await this.mem_block(this.ESP32S2_STUB.text,0),await this.mem_finish(this.ESP32S2_STUB.entry),this.transport.log("Stub is now running..."),this.ESP32S2_STUB.is_stub=!0}else if(this.chip_family==L.CHIP_FAMILY_ESP32_S3){await this.mem_begin(this.ESP32S3_STUB.data.length,this.ESP32S3_STUB.data_start,this.ESP32S3_STUB.text.length,0),await this.mem_block(this.ESP32S3_STUB.data.slice(0,this.ESP32S3_STUB.text.length),0),await this.mem_begin(this.ESP32S3_STUB.text.length,this.ESP32S3_STUB.text_start,this.ESP32S3_STUB.text.length,0),await this.mem_block(this.ESP32S3_STUB.text,0),await this.mem_finish(this.ESP32S3_STUB.entry),this.transport.log("Stub is now running..."),this.ESP32S3_STUB.is_stub=!0}else if(this.chip_family==L.CHIP_FAMILY_ESP8266){await this.mem_begin(this.ESP8266_STUB.data.length,this.ESP8266_STUB.data_start,this.ESP8266_STUB.text.length,0),await this.mem_block(this.ESP8266_STUB.data.slice(0,this.ESP8266_STUB.text.length),0),await this.mem_begin(this.ESP8266_STUB.text.length,this.ESP8266_STUB.text_start,this.ESP8266_STUB.text.length,0),await this.mem_block(this.ESP8266_STUB.text,0),await this.mem_finish(this.ESP8266_STUB.entry),this.transport.log("Stub is now running..."),this.ESP8266_STUB.is_stub=!0}else if(this.chip_family==L.CHIP_FAMILY_ESP32_C3){await this.mem_begin(this.ESP32C3_STUB.data.length,this.ESP32C3_STUB.data_start,this.ESP32C3_STUB.text.length,0),await this.mem_block(this.ESP32C3_STUB.data.slice(0,this.ESP32C3_STUB.text.length),0),await this.mem_begin(this.ESP32C3_STUB.text.length,this.ESP32C3_STUB.text_start,this.ESP32C3_STUB.text.length,0),await this.mem_block(this.ESP32C3_STUB.text,0),await this.mem_finish(this.ESP32C3_STUB.entry),this.transport.log("Stub is now running..."),this.ESP32C3_STUB.is_stub=!0}else this.transport.log("Unsupported chip family")}async write_flash({fileArray:t,flashSize:e="4MB",flashMode:s="dio",flashFreq:o="40m",eraseAll:r,compress:l,reportProgress:d,calculateMD5Hash:h}){if(this.chip_name===null)throw new Error("Connection required");if(this.chip_family===L.CHIP_FAMILY_ESP8266&&!this.ESP8266_STUB.is_stub||this.chip_family===L.CHIP_FAMILY_ESP32&&!this.ESP32_STUB.is_stub)throw new Error("Stub is not running");if(r)try{await this.erase_flash()}catch(p){throw new Error(`Failed to erase flash memory: 
+`+p)}const f={};e.endsWith("MB")?f.flash_size=parseInt(e.substring(0,e.length-2))+"MB":e.endsWith("KB")?f.flash_size=parseInt(e.substring(0,e.length-2))/1024+"MB":f.flash_size="4MB";const b=["keep","qio","qout","dio","dout"];if(!b.includes(s))throw new Error(`Invalid flash mode ${s}`);f.flash_mode=s;const m=["80m","40m","20m"];if(!m.includes(o))throw new Error(`Invalid flash frequency ${o}`);f.flash_freq=o;let _=0;for(const p of t)_+=p.data.length;d(0,_,0);let C=0;for(const[p,k]of t.entries()){this.transport.log(`Writing at 0x${k.address.toString(16)}... (${k.data.length} bytes)`);let O=k.data;if(l){const A=this.pako.deflate(O);O=new TextDecoder("utf-8").decode(A)}const R=8192,P=Math.floor(O.length/R);let M=O.length%R,H=0;await this.flash_begin(O.length,P+1,R,k.address);for(let A=0;A<P;A++)d(p,H,_.length),await this.flash_data(O.slice(R*A,R*(A+1)),A),H+=R;M>0&&await this.flash_data(O.slice(R*P,R*P+M),P),d(p,k.data.length,_.length),C+=k.data.length}}};g=c.CHIP_DETECT_MAGIC_REG_VAL;var a=class{constructor(t){this.port=t,this.baudrate=115200,this.log=t=>{console.log(t)},this.error=t=>{console.error(t)}}get_info(){return this.port.getInfo()}get_port(){return this.port}async connect(){await this.port.open({baudRate:this.baudrate}),this.reader=this.port.readable.getReader(),this.writer=this.port.writable.getWriter();let t=setTimeout(()=>{this.log("Device might be stuck in bootloader mode. Please try resetting it.")},5e3),e=await this.read(void 0,10,2);clearTimeout(t)}async get_pid(){return this.port.getInfo().usbProductId}async disconnect(){await this.reader.cancel(),await this.writer.close(),await this.port.close()}async setBaudrate(t){await this.port.setSignals({dataTerminalReady:!0,requestToSend:!0}),this.baudrate=t}async setRTS(t){await this.port.setSignals({requestToSend:t})}async setDTR(t){await this.port.setSignals({dataTerminalReady:t})}async write(t){await this.writer.write(t)}async read(t=0,e=1e3,s){const o=new Uint8Array(e);let r=0,l=!1;const d=setTimeout(()=>{l=!0,console.log("Timeout")},s);let h=new Date;for(;r<e&&!l;){try{const f=(await this.reader.read()).value;if(f===void 0)continue;f.length>0&&(o.set(f,r),r+=f.length)}catch(f){console.log(f)}}if(clearTimeout(d),r<e){let f=`Read ${r} bytes`;throw s!==void 0&&(f+=` in ${new Date-h}ms`),f+` of ${e} requested`,new Error(f)}return o.slice(0,e)}};var p=class{constructor(t,e=115200){this.transport=new a(t,e),this.esploader=new c(this.transport,e)}};var K=U(F),ft="serial"in navigator;var Z='<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 8h-1V3H6v5H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zM8 5h8v3H8V5zm8 12v2H8v-2h8zm2-2H6v-4h12v4z"/></svg>',et={error:{backgroundColor:"var(--esp-flasher-error-color, #f44336)"},info:{backgroundColor:"var(--esp-flasher-info-color, #2196f3)"},success:{backgroundColor:"var(--esp-flasher-success-color, #4caf50)"},warning:{backgroundColor:"var(--esp-flasher-warning-color, #ff9800)"},dark:{color:"#fff",backgroundColor:"#212121"},light:{color:"#000",backgroundColor:"#fff"}},G="esp-web-flasher",J={flashing:"Flashing",flashed:"Flashed",select_firmware:"Select firmware",flash_firmware:"Flash firmware",connect:"Connect",disconnect:"Disconnect",not_connected:"Not connected.",start_over:"Start Over",console:"Console",initialize:"Initialize",show_files:"Show Files",hide_files:"Hide files",add_file:"Add file"},Q="esp-web-flasher{display:block;--esp-flasher-font-family:sans-serif;--esp-flasher-font-size:16px;--esp-flasher-button-font-size:14px;--esp-flasher-log-font-family:monospace;--esp-flasher-log-font-size:12px;--esp-flasher-border-radius:4px;--esp-flasher-color:#000;--esp-flasher-success-color:#4caf50;--esp-flasher-error-color:#f44336;--esp-flasher-button-color:#fff;--esp-flasher-button-background-color:#03a9f4;--esp-flasher-button-border-radius:4px;--esp-flasher-button-border-width:0;--esp-flasher-button-border-color:transparent;--esp-flasher-button-hover-color:#fff;--esp-flasher-button-hover-background-color:#0288d1;--esp-flasher-button-hover-border-color:transparent;--esp-flasher-button-disabled-color:#fff;--esp-flasher-button-disabled-background-color:#63ccff;--esp-flasher-button-disabled-border-color:transparent;--esp-flasher-file-border-color:#eee;--esp-flasher-log-background:#fafafa;--esp-flasher-log-color:#000;--esp-flasher-log-border-radius:4px;--esp-flasher-progress-background:#03a9f44d;--esp-flasher-progress-color:#03a9f4;--esp-flasher-progress-border-radius:4px;font-family:var(--esp-flasher-font-family);font-size:var(--esp-flasher-font-size);color:var(--esp-flasher-color);background:var(--esp-flasher-background);border-radius:var(--esp-flasher-border-radius);border:var(--esp-flasher-border)}button{font-family:var(--esp-flasher-font-family);font-size:var(--esp-flasher-button-font-size);padding:10px 20px;color:var(--esp-flasher-button-color);background:var(--esp-flasher-button-background-color);border-radius:var(--esp-flasher-button-border-radius);border:var(--esp-flasher-button-border-width) solid var(--esp-flasher-button-border-color);transition:all .2s;cursor:pointer}button:hover{color:var(--esp-flasher-button-hover-color);background:var(--esp-flasher-button-hover-background-color);border-color:var(--esp-flasher-button-hover-border-color)}button:disabled{color:var(--esp-flasher-button-disabled-color);background:var(--esp-flasher-button-disabled-background-color);border-color:var(--esp-flasher-button-disabled-border-color);cursor:not-allowed}",$=(i,t)=>{var e;if(i.composedPath)return i.composedPath()[0];if(i.path)return i.path[0];if(i.originalTarget)return i.originalTarget;if(i.target)return i.target;if(t&&(e=t.shadowRoot)!=null&&e.elementFromPoint(i.clientX-t.getBoundingClientRect().x,i.clientY-t.getBoundingClientRect().y))return e;throw new S("Cannot find target")},W={log(i,t){console.log(t)},error(i,t){console.error(t)},warn(i,t){console.warn(t)}},X=class extends y{constructor(){super(...arguments),this.files=[],this.connected=!1,this.state=this.status,this._manifest=void 0,this._chipFamily=void 0,this.busy=!1}async connect(t){this.busy=!0,this._setState("connecting"),t.log("Requesting port..."),this.addLog("info","Requesting port...");const e=await navigator.serial.requestPort({});this.addLog("info","Port requested.");try{t.log("Trying to connect to serial port..."),await e.open({baudRate:115200}),this.addLog("info","Port opened."),this.transport=new a(e),this.addLog("info","Transport created."),this.esploader=new c(this.transport,115200,t),this.addLog("info","ESPLoader created."),this.connected=!0,this._chipFamily=this.esploader.chip_family,t.log(`Connected to ${this.esploader.chip_name}`),this.addLog("success",`Connected to ${this.esploader.chip_name}`)}catch(s){this.setError("Failed to connect","error"),t.error("Failed to connect to device",s)}this.busy=!1}async disconnect(t){this.busy=!0,t.log("Disconnecting..."),this.addLog("info","Disconnecting...");try{await this.transport.disconnect(),this.connected=!1,this.addLog("info","Disconnected.")}catch(e){this.setError("Failed to disconnect","error"),t.error("Failed to disconnect from device",e)}this.busy=!1}async flash(t){if(this.busy=!0,this._setState("flashing"),t.log("Flashing..."),this.addLog("info","Flashing..."),!this.files.length){const e=new S("No files selected");this.setError(e.message),t.error(e.message,e);return}try{const e=await this.esploader.write_flash({fileArray:this.files,flashSize:"4MB",flashMode:"dio",flashFreq:"40m",eraseAll:!1,compress:!0,reportProgress:(s,o,r)=>{this.dispatchEvent(new CustomEvent("flashing-progress",{detail:{file:this.files[s].file,progress:r,total:o}}))},calculateMD5Hash:s=>{const o=crypto.subtle.digest("MD5",s);return o}});await this.esploader.hard_reset(),this.addLog("success","Flashing complete."),this._setState("flashed")}catch(e){this.setError(e.message),t.error(e.message,e)}this.busy=!1}async erase(t){this.busy=!0,this._setState("erasing"),t.log("Erasing..."),this.addLog("info","Erasing...");try{await this.esploader.erase_flash(),this.addLog("success","Erase complete.")}catch(e){this.setError(e.message),t.error(e.message,e)}this.busy=!1}addFile(t,e,s){const o={data:s,offset:e,file:t};this.files.push(o),this.dispatchEvent(new CustomEvent("file-added",{detail:o}))}removeFile(t){this.files=this.files.filter(e=>e.file.name!==t.file.name),this.dispatchEvent(new CustomEvent("file-removed",{detail:t}))}get filesCount(){return this.files.length}};var Y=document.createElement("template");Y.innerHTML=`
+  <style>
+    :host {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    /* Log viewer */
+    .logs {
+      padding: 1rem;
+      border: 1px solid var(--esp-flasher-file-border-color, #eee);
+      border-radius: var(--esp-flasher-log-border-radius, 4px);
+      background: var(--esp-flasher-log-background, #fafafa);
+      color: var(--esp-flasher-log-color, #000);
+      font-family: var(--esp-flasher-log-font-family, monospace);
+      font-size: var(--esp-flasher-log-font-size, 12px);
+      min-height: 200px;
+      overflow: auto;
+      resize: vertical;
+    }
+  </style>
+
+  <div class="logs" part="logs"></div>
+`;var V=class extends HTMLElement{constructor(){super(),this._adapter=void 0,this.attachShadow({mode:"open"}),this.shadowRoot.appendChild(Y.content.cloneNode(!0))}connectedCallback(){this.shadowRoot.querySelector(".logs").addEventListener("log",e=>this.log(e.detail))}get adapter(){return this._adapter}set adapter(t){this._adapter=t,this.log(t.getLog())}log(t){const e=this.shadowRoot.querySelector(".logs");t.level==="clear"?e.innerHTML="":e.innerHTML+=`
+<div part="log-line log-line-${t.level}" class="log log-${t.level}">${t.message}</div>`}};customElements.define("esp-web-log-viewer",V);var z=document.createElement("template");z.innerHTML=`
+  <style>
+    :host {
+      display: block;
+      position: relative;
+    }
+    progress {
+      display: block;
+      width: 100%;
+      height: 24px;
+      border: 0;
+      border-radius: var(--esp-flasher-progress-border-radius, 4px);
+      background: var(--esp-flasher-progress-background, #03a9f44d);
+    }
+
+    progress::-webkit-progress-bar {
+      border-radius: var(--esp-flasher-progress-border-radius, 4px);
+      background: var(--esp-flasher-progress-background, #03a9f44d);
+    }
+
+    progress::-webkit-progress-value {
+      border-radius: var(--esp-flasher-progress-border-radius, 4px);
+      background: var(--esp-flasher-progress-color, #03a9f4);
+    }
+
+    progress::-moz-progress-bar {
+      border-radius: var(--esp-flasher-progress-border-radius, 4px);
+      background: var(--esp-flasher-progress-color, #03a9f4);
+    }
+    .progress-label {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+  </style>
+
+  <progress value="0" max="100"></progress>
+  <div class="progress-label" part="progress-label"></div>
+`;var q=class extends HTMLElement{constructor(){super(...arguments),this.label=void 0,this._value=0,this._max=100}static get observedAttributes(){return["value","max","label"]}get value(){return this._value}set value(t){this._value=t,this.shadowRoot.querySelector("progress").value=t,this.updateLabel()}get max(){return this._max}set max(t){this._max=t,this.shadowRoot.querySelector("progress").max=t,this.updateLabel()}connectedCallback(){this.attachShadow({mode:"open"}),this.shadowRoot.appendChild(z.content.cloneNode(!0)),this.value=Number(this.getAttribute("value"))||0,this.max=Number(this.getAttribute("max"))||100,this.label=this.getAttribute("label")||void 0,this.updateLabel()}attributeChangedCallback(t,e,s){switch(t){case"value":this.value=Number(s)||0;break;case"max":this.max=Number(s)||100;break;case"label":this.label=s,this.updateLabel();break}}updateLabel(){this.shadowRoot.querySelector(".progress-label").innerHTML=this.label?this.label:`${Math.round(this.value/this.max*100)}%`}};customElements.define("esp-web-progress-bar",q);var tt=document.createElement("template");tt.innerHTML=`
+  <style>
+    ${Q}
+  </style>
+  <button part="button">
+    <slot>${J.connect}</slot>
+  </button>
+`;var at=class extends HTMLElement{constructor(){super(...arguments),this.disabled=!1}static get observedAttributes(){return["disabled"]}set manifest(t){this.flasher.manifest=t}get manifest(){return this.flasher.manifest}set state(t){this.disabled=t,this.flasher.busy=t,t?(this.buttonEl.setAttribute("disabled",""),this.setAttribute("disabled","")):(this.buttonEl.removeAttribute("disabled"),this.removeAttribute("disabled"))}connectedCallback(){this.attachShadow({mode:"open"}),this.shadowRoot.appendChild(tt.content.cloneNode(!0)),this.buttonEl=this.shadowRoot.querySelector("button"),this.addEventListener("click",async t=>{t.preventDefault(),this.flasher.connected?this.flasher.disconnect(W):this.flasher.connect(W)}),this.flasher.addEventListener("state-changed",()=>this.handleStateUpdate())}disconnectedCallback(){this.flasher.removeEventListener("state-changed",this.handleStateUpdate)}attributeChangedCallback(t,e,s){this.disabled=s!==null}handleStateUpdate(){this.state=this.flasher.busy||this.flasher.flashing;const t=this.flasher.connected?J.disconnect:J.connect;this.innerHTML=t,this.flasher.connected&&this.buttonEl.classList.add("connected")}};customElements.define("esp-web-connect-button",at);var it=document.createElement("template");it.innerHTML=`
+  <style>
+    ${Q}
+  </style>
+
+  <button part="button" class="button">
+    <slot>${J.erase}</slot>
+  </button>
+`;var ut=class extends HTMLElement{constructor(){super(),this.disabled=!0,this.addEventListener("click",async t=>{t.preventDefault(),this.flasher.erase(W)}),this.flasher.addEventListener("state-changed",()=>this.handleStateUpdate())}static get observedAttributes(){return["disabled"]}set state(t){this.disabled=t,t?(this.buttonEl.setAttribute("disabled",""),this.setAttribute("disabled","")):(this.buttonEl.removeAttribute("disabled"),this.removeAttribute("disabled"))}connectedCallback(){this.attachShadow({mode:"open"}),this.shadowRoot.appendChild(it.content.cloneNode(!0)),this.buttonEl=this.shadowRoot.querySelector("button"),this.handleStateUpdate()}disconnectedCallback(){this.flasher.removeEventListener("state-changed",this.handleStateUpdate)}attributeChangedCallback(t,e,s){this.disabled=s!==null}handleStateUpdate(){this.state=this.flasher.busy||this.flasher.flashing||!this.flasher.connected}};customElements.define("esp-web-erase-button",ut);var H=document.createElement("template");H.innerHTML=`
+  <style>
+    ${Q}
+
+    :host {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    /* Connection section */
+    .connection {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    /* File section */
+    #file-selector {
+      flex: 1;
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    input[type="file"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    /* Main container */
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      border: 1px solid var(--esp-flasher-file-border-color, #eee);
+      border-radius: var(--esp-flasher-border-radius, 4px);
+      padding: 1rem;
+    }
+
+    .manifest-files {
+      padding-top: 1rem;
+    }
+
+    /* Files table */
+    .files-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .files-table th {
+      font-weight: bold;
+    }
+    .files-table th,
+    .files-table td {
+      padding: 0.5rem;
+      text-align: left;
+    }
+    .files-table td:nth-child(2) {
+      font-family: var(--esp-flasher-log-font-family, monospace);
+    }
+  </style>
+
+  <div id="container" class="container">
+    <div class="connection">
+      <div id="file-selector">
+        <div part="file-input-wrapper" class="file-input-wrapper">
+          <button part="button" class="button">
+            <slot name="button-text">${J.add_file}</slot>
+          </button>
+
+          <input
+            part="file-input"
+            type="file"
+            accept=".bin"
+            multiple
+          />
+        </div>
+      </div>
+    </div>
+    <div class="manifest-files">
+      <table part="files-table" class="files-table">
+        <thead part="files-table-header">
+          <tr>
+            <th>File</th>
+            <th>Offset</th>
+          </tr>
+        </thead>
+        <tbody part="files-table-body"></tbody>
+      </table>
+    </div>
+
+    <!-- Flashing section -->
+    <div class="flashing">
+      <esp-web-progress-bar value="0" max="100"></esp-web-progress-bar>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="actions">
+      <esp-web-connect-button></esp-web-connect-button>
+      <button part="button" id="flash-button" class="flash-button">
+        ${J.flash_firmware}
+      </button>
+      <esp-web-erase-button></esp-web-erase-button>
+    </div>
+  </div>
+`;var ct=class extends HTMLElement{constructor(){super(...arguments),this.manifest=void 0,this.log=W}get manifestPath(){return this.getAttribute("manifest")}set manifestPath(t){this.setAttribute("manifest",t)}static get observedAttributes(){return["manifest","new-install-button"]}connectedCallback(){this.attachShadow({mode:"open"}),this.shadowRoot.appendChild(H.content.cloneNode(!0)),this.flasher=new X,this.flasher.addEventListener("state-changed",()=>this.onFlasherStateChanged()),this.flasher.addEventListener("file-added",e=>this.onFileAdded(e)),this.flasher.addEventListener("file-removed",e=>this.onFileRemoved(e)),this.flasher.addEventListener("flashing-progress",(e,s,o)=>this.onFlashingProgress(e,s,o)),this.progressBar=this.shadowRoot.querySelector("esp-web-progress-bar"),this.flashButton=this.shadowRoot.querySelector("#flash-button"),this.flashButton.addEventListener("click",()=>this.flash()),this.connectButton=this.shadowRoot.querySelector("esp-web-connect-button"),this.connectButton.flasher=this.flasher,this.eraseButton=this.shadowRoot.querySelector("esp-web-erase-button"),this.eraseButton.flasher=this.flasher,this.fileInput=this.shadowRoot.querySelector("input[type=file]"),this.fileInput.addEventListener("change",async()=>{for(const e of this.fileInput.files)await this.loadFile(e)}),this.updateFlashButtonState(),this.manifestPath&&this.loadManifest()}onFlasherStateChanged(){this.updateFlashButtonState()}onFileAdded(t){this.updateFlashButtonState();const e=this.shadowRoot.querySelector("tbody"),s=document.createElement("tr");s.innerHTML=`<td>${t.detail.file.name}</td><td>${t.detail.offset}</td>`,e.appendChild(s)}onFileRemoved(t){this.updateFlashButtonState();const e=this.shadowRoot.querySelector("tbody"),s=Array.from(e.querySelectorAll("tr")).find(o=>o.querySelector("td").innerText===t.detail.file.name);s&&s.remove()}onFlashingProgress(t,e,s){this.progressBar.value=s,this.progressBar.max=e,this.progressBar.label=`${t.detail.file.name}: ${s}/${e}`}async loadManifest(){const t=await(await fetch(this.manifestPath)).json();this.manifest=t;for(const e of t.parts){const s=await fetch(e.path),o=await s.blob();this.loadFile(new File([o],e.path||"firmware.bin"),e.offset)}}async loadFile(t,e=0){const s=await new Promise((o,r)=>{const l=new FileReader;l.onload=()=>o(l.result),l.onerror=()=>r(l.error),l.readAsBinaryString(t)});this.flasher.addFile(t,e,s)}flash(){this.flasher.flash(this.log)}updateFlashButtonState(){this.flashButton.disabled=!this.flasher.connected||this.flasher.busy||!this.flasher.filesCount}}customElements.define("esp-web-flasher",ct)}};var nt=U(F);var st;!function(i){i.NOT_SUPPORTED="Not Supported",i.NOT_ALLOWED="Not Allowed",i.OK="OK"}(st||(st={}));var x=class{constructor(){this.status="ok",this._error=void 0,this.status="serial"in navigator?st.OK:st.NOT_SUPPORTED,this.status===st.OK&&location.protocol!=="https:"&&(this.status=st.NOT_ALLOWED)}check(){return this.status}};var dt,ht=class extends Event{constructor(t,e){super(t,e),Object.assign(this,e)}};var ot;!function(i){i.CONNECT="connect",i.DISCONNECT="disconnect",i.LOG="log",i.STATE="state"}(ot||(ot={}));var b=class extends EventTarget{constructor(){super(...arguments),this.state=void 0,this._manifest=void 0,this._parts=[],this._chipFamily=void 0,this._port=void 0,this._transport=void 0,this._esploader=void 0,this.busy=!1}set manifest(t){this._manifest=t;const e=new URL(t,window.location.href).href;this._getFirmwareParts(e).then(s=>{this._parts=s})}get manifest(){return this._manifest}get connected(){return!!this._transport}get chipFamily(){return this._chipFamily}async _getFirmwareParts(t){const e=[];if(!this.manifest)return e;const s=await(await fetch(t)).json(),o=new URL(t).pathname.substring(0,new URL(t).pathname.lastIndexOf("/"));for(const r of s.parts)e.push({path:`${o}/${r.path}`,offset:r.offset});return this._chipFamily=s.chipFamily,e}async flash(){this._setState("flashing"),this._log("info","Flashing...");try{if(!this._parts.length){const e=new S("No firmware selected");this._log("error",e.message);return}const t=[];for(const r of this._parts){const l=await(await fetch(r.path)).blob();t.push({data:l,offset:r.offset})}const e=await this.esploader.write_flash({fileArray:t,flashSize:"4MB",flashMode:"dio",flashFreq:"40m",eraseAll:!1,compress:!0,reportProgress:(r,l,d)=>{this.dispatchEvent(new CustomEvent("flashing-progress",{detail:{file:t[r].file,progress:d,total:l}}))},calculateMD5Hash:r=>{const l=crypto.subtle.digest("MD5",r);return l}}),s=new Blob([e],{type:"application/octet-stream"}),o=new File([s],"firmware.bin");await this._flashFile(o,0),this._log("success","Flashing complete.")}catch(t){this._log("error",t.message)}this._setState("idle")}async _flashFile(t,e){const s=await new Promise((o,r)=>{const l=new FileReader;l.onload=()=>o(l.result),l.onerror=()=>r(l.error),l.readAsBinaryString(t)});await this.esploader.write_flash({fileArray:[{data:s,offset:e}],flashSize:"4MB",flashMode:"dio",flashFreq:"40m",eraseAll:!1,compress:!0,reportProgress:(o,r,l)=>{this.dispatchEvent(new CustomEvent("flashing-progress",{detail:{file:t.name,progress:l,total:r}}))}}),await this.esploader.hard_reset()}connect(){this._port=p,this._transport=new a(this._port),this._esploader=new c(this._transport,115200,W),this._setState("connecting"),this.esploader.connect().then(()=>{this._chipFamily=this.esploader.chip_family,this._setState("connected"),this.dispatchEvent(new Event(ot.CONNECT))}).catch(t=>{this._log("error",t.message),this._setState("error")})}disconnect(){this._transport.disconnect(),this._transport=void 0,this._port=void 0,this._esploader=void 0,this._setState("disconnected"),this.dispatchEvent(new Event(ot.DISCONNECT))}_log(t,e,s){this.dispatchEvent(new ht(ot.LOG,{level:t,message:e,details:s}))}_setState(t){this.state=t,this.dispatchEvent(new Event(ot.STATE))}};var m=class{constructor(t,e){this.logger=t,this.state=e}};var _=class{constructor(){this.flasher=new b,this.adapter=new m(W,new x),this.addEventListener("esp-web-flash-button-clicked",async t=>{t.preventDefault();try{this.adapter.state.status===st.OK&&!this.flasher.connected?await this.flasher.connect():this.flasher.disconnect()}catch(e){this.logger.error(e.message)}})}};var P=class extends HTMLElement{constructor(){super(...arguments),this.overrides=void 0,this._rendered=void 0}render(){throw new Error("Render method not implemented.")}firstUpdated(){}updated(){}connectedCallback(){this._rendered||(this.render(),this.firstUpdated()),this._rendered=!0}attributeChangedCallback(t,e,s){s!==e&&this.updated(t,e,s)}};var R=i=>i.replace(/([a-z0-9]|(?=[A-Z]))([A-Z])/g,"$1-$2").toLowerCase();var A=class extends P{constructor(){super(...arguments),this.hass=void 0,this.entity=void 0}render(){const i=`
+      <style>
+        :host {
+          display: flex;
+          align-items: center;
+          flex-direction: column;
+        }
+
+        .name {
+          font-weight: 500;
+        }
+
+        .state {
+          font-size: 0.8rem;
+          color: #666;
+        }
+      </style>
+
+      <div class="name"></div>
+      <div class="state"></div>
+      <div class="icon">
+        <slot name="icon"></slot>
+      </div>
+    `,t=this.shadowRoot;if(t.innerHTML="",!this.hass||!this.entity)return;const e=this.hass.states[this.entity];if(!e)return;const s=document.createElement("div");s.innerHTML=i;const o=e.attributes.friendly_name||this.entity;s.querySelector(".name").innerHTML=o,s.querySelector(".state").innerHTML=e.state,e.attributes.icon&&this.setIcon(s.querySelector(".icon"),e.attributes.icon),t.appendChild(s)}updated(i,t,e){super.updated(i,t,e),this.render()}};var k=class extends P{constructor(){super(...arguments),this.type=void 0,this.label=void 0,this.disabled=!1}render(){const i=`
+      <button>
+        ${this.label||""}
+      </button>
+    `,t=this.shadowRoot;t.innerHTML="",this.disabled&&t.querySelector("button").setAttribute("disabled",""),t.querySelector("button").addEventListener("click",e=>this.handleClick(e))}firstUpdated(){super.firstUpdated(),this.render()}updated(i,t,e){super.updated(i,t,e),this.render()}handleClick(i){}};var O=class extends P{constructor(){super(...arguments),this.type=void 0,this.label=void 0,this.disabled=!1,this.addEventListener("click",t=>{this.handleClick(t)})}render(){const i=`
+      <button>
+        ${this.label||""}
+      </button>
+    `,t=this.shadowRoot;t.innerHTML="",this.disabled&&t.querySelector("button").setAttribute("disabled","")}updated(i,t,e){super.updated(i,t,e),this.render()}};var M=class extends P{constructor(){super(...arguments),this.type=void 0,this.value=void 0,this.disabled=!1}render(){const i=`
+      <input type="${this.type||"text"}" value="${this.value||""}" />
+    `,t=this.shadowRoot;t.innerHTML="",this.disabled&&t.querySelector("input").setAttribute("disabled","")}updated(i,t,e){super.updated(i,t,e),this.render()}input(i){this.value=i.target.value}};var C=class extends P{constructor(){super(...arguments),this.type=void 0,this.value=void 0,this.disabled=!1,this.addEventListener("input",t=>{this.value=t.target.value})}render(){const i=`
+      <input type="${this.type||"text"}" value="${this.value||""}" />
+    `,t=this.shadowRoot;t.innerHTML="",this.disabled&&t.querySelector("input").setAttribute("disabled","")}updated(i,t,e){super.updated(i,t,e),this.render()}};var H=class extends P{constructor(){super(...arguments),this.type=void 0,this.value=void 0,this.checked=void 0,this.disabled=!1,this.addEventListener("change",t=>{this.checked=t.target.checked})}render(){const i=`
+      <input type="${this.type||"checkbox"}" value="${this.value||""}" ${this.checked?"checked":""} />
+    `,t=this.shadowRoot;t.innerHTML="",this.disabled&&t.querySelector("input").setAttribute("disabled","")}updated(i,t,e){super.updated(i,t,e),this.render()}}})();
+
+//# sourceMappingURL=esp-web-flasher.js.map
+    </script>
+
 </body>
 </html>
